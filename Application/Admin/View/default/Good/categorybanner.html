@@ -1,0 +1,587 @@
+<extend name="Public/base"/>
+<block name="style">
+    <script type="text/javascript" src="__PUBLIC__/js/qiniu/moxie.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/qiniu/Plupload.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/qiniu/qiniu.min.js"></script>
+    <style>
+        .operateBtn{
+            font-size:12px;
+            padding:0px 5px;
+            color:blue;
+
+        }
+        .operateBtn:hover{
+            cursor:pointer;
+        }
+        .l1{
+            float: left;
+            width: 100%;
+            height: 35px;
+            margin-top: 10px;
+        }
+        .l1 .l{
+            float: left;
+            width: 80px;
+            text-align: right;
+            height: 100%;
+        }
+        .l1 .r{
+            float: left;
+            width: 500px;
+            text-align: left;
+            height: 100%;
+        }
+        .l1 .r select{
+            width: 200px;
+            height: 25px;
+        }
+        .l2{
+            float: left;
+            width: 100%;
+            margin-top: 40px;
+        }
+        .l2 .title{
+            border-bottom: 1px solid lightgrey;
+            width: 100%;
+            height: 30px;
+        }
+        .l2 .title .t1{
+            float: left;
+            width: 80px;
+            height: 100%;
+            margin-left: 20px;
+            border-radius: 3px;
+            border: 1px solid lightgrey;
+            border-bottom: 1px solid white;
+            margin-top: 2px;background: white;
+            text-align: center;
+            font-size: 14px;
+            line-height: 28px;
+        }
+        .l2 .title .t1no{
+            float: left;
+            width: 80px;
+            height: 100%;
+            margin-left: 20px;
+            background: white;
+            text-align: center;
+            font-size: 14px;
+            line-height: 32px;
+        }
+        .l2 .title .t2{
+            float: left;
+            width: 80px;
+            height: 100%;
+            border-radius: 3px;
+            border: 1px solid lightgrey;
+            border-bottom: 1px solid white;
+            margin-top: 2px;background: white;
+            text-align: center;
+            font-size: 14px;
+            line-height: 28px;
+        }
+        .l2 .title .t2no{
+            float: left;
+            width: 80px;
+            height: 100%;
+            background: white;
+            text-align: center;
+            font-size: 14px;
+            line-height: 32px;
+        }
+        .l2 .title a{
+            width: 100%;
+            color: #333333;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .menu1 {
+            width: 100%;
+        }
+        .content1 {
+            margin-left: 100px;
+            width: 100%;
+            float: left;
+        }
+        .content1 .l{
+            float: left;
+            width: 158px;
+            height: 98px;
+            border: 1px solid lightgrey;
+            margin-top: 20px;
+        }
+        .content1 .l img{
+            width: 158px;
+            height: 98px;
+        }
+        .content1 .r{
+            float: left;
+            width: 610px;
+            height: 98px;
+            margin-left: 40px;
+            margin-top: 20px;
+        }
+        .content1 .r .r1{
+            float: left;
+            width: 100%;
+            height: 25px;
+            line-height: 30px;
+        }
+        .content1 .r .r1 input{
+            width: 200px;
+            height: 25px;
+        }
+        .content1 .r .r2{
+            float: left;
+            width: 100%;
+            height: 48px;
+        }
+
+
+        .content2 {
+            margin-left: 100px;
+            width: 100%;
+            float: left;
+        }
+        .content2 .l{
+            float: left;
+            width: 158px;
+            height: 98px;
+            border: 1px solid black;
+            margin-top: 20px;
+        }
+        .content2 .l img{
+            width: 158px;
+            height: 98px;
+        }
+        .content2 .r{
+            float: left;
+            width: 710px;
+            height: 98px;
+            margin-left: 40px;
+            margin-top: 30px;
+        }
+        .content2 .r .r1{
+            float: left;
+            width: 100%;
+            height: 30px;
+            line-height: 30px;
+        }
+        .content2 .r .r1 input{
+            float: left;
+            width: 200px;
+            height: 25px;
+        }
+        .content2 .r .r1 span{
+            float: left;
+            width: 90px;
+            text-align: right;
+            height: 30px;
+        }
+        .content2 .r .r2{
+            float: left;
+            width: 100%;
+            height: 38px;
+        }
+        .img_add_c{
+            position:relative;
+            float: left;
+            width: 100px;
+            height: 100px;
+            line-height: 100px;
+            text-align: center;
+            background-size:100px 100px;
+            border: 1px solid #BDBDBD;
+        }
+    </style>
+</block>
+<block name="body">
+    <div class="main-title">
+        <h2 id="mytitle">banner配置</h2>
+    </div>
+<form action="./add" method="post">
+    <div class="l1">
+        <div class="l">商品频道：</div>
+        <div class="r"><select id="categoryid"></select></div>
+    </div>
+
+    <div class="l2">
+        <div class="title">
+            <div id="t1" class="t1" onclick="menu(0)">
+                <a>已发布</a>
+            </div>
+            <div id="t2" class="t2no" onclick="menu(1)">
+                <a>待发布</a>
+            </div>
+        </div>
+    </div>
+
+   <div id="menu1" class="menu1">
+       <div style="display: none" class="content1">
+           <div class="l">
+               <img/>
+           </div>
+           <div class="r">
+               <div class="r1">
+                   <span>banner名称：</span>
+                   <input type="text"/>
+               </div>
+               <div class="r2"></div>
+               <div class="r1"><a>复制到待发布</a></div>
+           </div>
+       </div>
+   </div>
+    <div id="menu2" class="menu2" style="display: none">
+        <div style="float: left;margin-top: 20px;width: 100%;height: 35px;line-height: 35px;padding-left: 40px">
+            <input type="button" value="新增" style="margin-right: 10px" class="btn  select_btn" onclick="createItem()"/>
+            <input type="button" value="发布" class="btn select_btn" onclick="publish()"/>
+        </div>
+        <div style="float: left;margin-top: 40px;width: 100%;height: 35px;line-height: 35px;padding-left: 40px">
+            <span>预览手机号（,隔开）：</span>
+            <input id="mobiles" type="text" style="width: 350px;height: 30px"/>
+            <input type="button" value="预览发布" class="btn  select_btn" onclick="preview()"/>
+        </div>
+
+        <div id="m" style="width: 100%">
+            <div class="content2">
+                <div class="l">
+                    <img name="img"/>
+                </div>
+                <div class="r">
+                    <div class="r2">
+                        <a class="btn  select_btn" target="_blank" href="">预览图片</a>
+                        <span>（图片格式750*420px)</span>
+                    </div>
+                    <div class="r1">
+                        <span>banner名称：</span>
+                        <input name="desc" type="text"/>
+                    </div>
+                    <div name="transfer" class="r1"><span>跳转链接：</span><input type="text" value=""/></div>
+                </div>
+            </div>
+        </div>
+        <div style="float: left;margin-top: 20px;width: 100%;height: 35px;line-height: 35px;padding-left: 40px">
+            <input type="button" value="保存" class="btn  select_btn" onclick="save()"/>
+        </div>
+    </div>
+</form>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script type="text/javascript">
+        var cid=0;
+        var category=eval({$category});
+        var key="";
+        $(document).ready(function(){
+            initQiniu();
+            initauthcategories();
+        });
+
+        function menu(i){
+            cid=i;
+            if(i==0){
+                $("#t1").attr("class","t1");
+                $("#t2").attr("class","t2no");
+                $("#menu1").css("display","block");
+                $("#menu2").css("display","none");
+                query();
+            }
+            else{
+                $("#t1").attr("class","t1no");
+                $("#t2").attr("class","t2");
+                $("#menu1").css("display","none");
+                $("#menu2").css("display","block");
+                query1();
+            }
+        }
+
+        function initauthcategories() {
+            $("#categoryid").empty();
+            for(var i in category){
+
+                var item=category[i];
+                $("<option value='"+item.id+"'>"+item.name+"</option>").appendTo($("#categoryid"));
+            }
+            $("#categoryid").change(function(){
+                if(cid==0){
+                    query();
+                }
+                else {
+                    query1();
+                }
+            });
+        }
+
+        function query(){
+            var id=$("#categoryid").val();
+            var ii=layer.msg("加载中……");
+            $.ajax({
+                type: "POST",
+                url: "./getBanners?ajax=1",
+                dataType:"json",
+                data:"id="+id,
+                success: function (data) {
+                    layer.close(ii);
+                    if(data.state!=0){
+                        layer.alert(data.msg);
+                        return;
+                    }
+                    $(".menu1").html("");
+                    for(var i in data.data){
+                        var item=data.data[i];
+                        var str='<div class="content1"><div class="l">';
+                        str+='<img src="'+item.img+'"/>';
+                        str+='</div><div class="r"><div class="r1"><span>banner名称：</span>';
+                        str+='<input type="text" value="'+item.desc+'"/>';
+                        str+='</div><div class="r2"></div><div class="r1"><a onclick="copy('+item.id+')" href="javascript:void(0)" >复制到待发布</a></div></div></div>';
+                        $(str).appendTo($(".menu1"));
+                    }
+                }
+            });
+        }
+
+        function copy(id){
+            var ii=layer.msg("加载中……");
+            $.ajax({
+                type: "POST",
+                url: "./copyBanners?ajax=1",
+                dataType:"json",
+                data:"id="+id,
+                success: function (data) {
+                    layer.close(ii);
+                    if(data.state!=0){
+                        layer.alert(data.msg);
+                        return;
+                    }
+                    else {
+                        layer.alert("操作成功！");
+                    }
+                }
+            });
+        }
+
+        function query1(){
+            var id=$("#categoryid").val();
+            var ii=layer.msg("加载中……");
+            $.ajax({
+                type: "POST",
+                url: "./getShelfBanners?ajax=1",
+                dataType:"json",
+                data:"id="+id,
+                success: function (data) {
+                    layer.close(ii);
+                    if(data.state!=0){
+                        layer.alert(data.msg);
+                        return;
+                    }
+                    $("#m").html("");
+                    var huidu;
+                    for(var i in data.data){
+                        var item=data.data[i];
+                        var imgid="c"+item.id;
+                        var str='<div class="content2"><a class="l" style="width: 32px;line-height: 88px;border: none;text-decoration: underline;cursor: pointer" onclick="del('+item.id+')">删除</a><div class="l">';
+                        str+='<input type="hidden" name="id" value="'+item.id+'"/>';
+                        str+='<img id="'+imgid+'" name="img" src="'+item.img+'" ng-click="upload()"/>';
+                        str+='</div><div class="r"><div class="r2">';
+                        str+=' <a class="btn  select_btn" target="_blank" href="'+item.img+'">预览图片</a>';
+                        str+='<span>（图片格式750*420px)</span></div><div class="r1"><span>banner名称：</span>';
+                        str+='<input name="desc" type="text" value="'+item.desc+'"/>';
+                        str+='</div><div class="r1"><span>跳转链接：</span>';
+                        str+='<input name="transfer" type="text" value="'+item.transfer+'"/></div></div></div>';
+                        $(str).appendTo($("#m"));
+
+                        initUploader(imgid);
+                        huidu=item;
+                    }
+                    if(huidu.sendtype=="1"){
+                        $("#mobiles").val(huidu.senddesc);
+                    }
+                }
+            });
+        }
+
+        function createItem(){
+            var timestamp = Date.parse(new Date());
+            var imgid="c"+timestamp;
+            var str='<div class="content2"><a class="l" style="width: 32px;line-height: 88px;border: none;text-decoration: underline;cursor: pointer" onclick="$(this).parent().remove()">删除</a><div class="l">';
+            str+='<input type="hidden" name="id" value="0"/>';
+            str+='<img id="'+imgid+'" name="img" ng-click="upload()" src="" />';
+            str+='</div><div class="r"><div class="r2">';
+            str+=' <a class="btn  select_btn" target="_blank" >预览图片</a>';
+            str+='<span>（图片格式750*420px)</span></div><div class="r1"><span>banner名称：</span>';
+            str+='<input name="desc" type="text"/>';
+            str+='</div><div class="r1"><span>跳转链接：</span>';
+            str+='<input name="transfer" type="text" /></div></div></div>';
+            $(str).appendTo($("#m"));
+            initUploader(imgid);
+        }
+
+        function publish(){
+            if(!confirm("确认发布?")){
+                return;
+            }
+            var id=$("#categoryid").val();
+            var ii=layer.msg("加载中……");
+            $.ajax({
+                type: "POST",
+                url: "./publish?ajax=1",
+                dataType:"json",
+                data:"id="+id,
+                success: function (data) {
+                    layer.close(ii);
+                    if(data.state!=0){
+                        layer.alert(data.msg);
+                        return;
+                    }
+                    else {
+                        layer.alert("操作成功！");
+                        query1();
+                    }
+                }
+            });
+        }
+
+        function preview(){
+            var id=$("#categoryid").val();
+            var ii=layer.msg("加载中……");
+            $.ajax({
+                type: "POST",
+                url: "./preview?ajax=1",
+                dataType:"json",
+                data:"id="+id+"&mobiles="+encodeURIComponent($("#mobiles").val()),
+                success: function (data) {
+                    layer.close(ii);
+                    if(data.state!=0){
+                        layer.alert(data.msg);
+                        return;
+                    }
+                    else {
+                        layer.alert("操作成功！");
+                    }
+                }
+            });
+        }
+
+        function del(id){
+            if(!confirm("确认删除该banner吗？")){
+                return;
+            }
+            var ii=layer.msg("加载中……");
+            $.ajax({
+                type: "POST",
+                url: "./delcategorybanner?ajax=1",
+                dataType:"json",
+                data:"id="+id,
+                success: function (data) {
+                    layer.close(ii);
+                    if(data.state!=0){
+                        layer.alert(data.msg);
+                        return;
+                    }
+                    else {
+                        layer.alert("操作成功！");
+                        query1();
+                    }
+                }
+            });
+        }
+
+        function save(){
+            var id=$("#categoryid").val();
+            var content=new Array();
+            var i=0;
+            $(".content2").each(function(){
+                var item={};
+                item.img=$(this).find("[name='img']").attr("src");
+                item.desc=$(this).find("[name='desc']").val();
+                item.transfer=$(this).find("[name='transfer']").val();
+                item.id=$(this).find("[name='id']").val();
+                content[i]=item;
+                i++;
+            });
+            var data="id="+ encodeURIComponent(id);
+            data+="&content="+encodeURIComponent(JSON.stringify(content));
+
+            var ii=layer.msg("操作中……");
+            $.ajax({
+                type: "POST",
+                url: "./savecategorybanner?ajax=1",
+                dataType:"json",
+                data:data,
+                success: function (data) {
+                    layer.close(ii);
+                    if(data.state!=0){
+                        layer.alert(data.msg);
+                        return;
+                    }
+                    else{
+                        query1();
+                        alert("操作成功！");
+                    }
+                }
+            });
+        }
+
+        function initQiniu(){
+            $.getJSON('./getQiNiuKey',function(data){
+                if(data.state==0){
+                    key=data.result;
+                }
+            });
+        }
+
+        function initUploader(id){
+            var cpts = Qiniu.uploader({
+                runtimes: 'html5,flash,html4',      // 上传模式,依次退化
+                browse_button: id,         // 上传选择的点选按钮，**必需**
+                uptoken : key, // uptoken 是上传凭证，由其他程序生成
+                get_new_uptoken: false,             // 设置上传文件的时候是否每次都重新获取新的 uptoken
+                unique_names: true,              // 默认 false，key 为文件名。若开启该选项，JS-SDK 会为每个文件自动生成key（文件名）
+                domain:'7xpcl7.com2.z0.glb.qiniucdn.com',
+                max_file_size: '100mb',             // 最大文件体积限制
+                flash_swf_url: '__PUBLIC__/js/qubuy/Moxie.swf',  //引入 flash,相对路径
+                max_retries: 3,                     // 上传失败最大重试次数
+                chunk_size: '4mb',                  // 分块上传时，每块的体积
+                auto_start: true,                   // 选择文件后自动上传，若关闭需要自己绑定事件触发上传,
+                filters: {
+                    mime_types : [
+                        {title : "图片文件", extensions: "jpg,jpeg,gif,png"}
+                    ]
+                },
+                init: {
+                    'FilesAdded': function(up, files) {
+                        plupload.each(files, function(file) {
+                            // 文件添加进队列后,处理相关的事情
+                        });
+                    },
+                    'BeforeUpload': function(up, file) {
+                        // 每个文件上传前,处理相关的事情
+                        //$.showPreloader('上传中……');
+                    },
+                    'UploadProgress': function(up, file) {
+                        // 每个文件上传时,处理相关的事情
+                    },
+                    'FileUploaded': function(up, file, info) {
+                        //$.hidePreloader();
+                        var res = JSON.parse(info);
+                        var imgkey=res.key;
+                        var src="http://7xpcl7.com2.z0.glb.qiniucdn.com/"+res.key;
+                        $("#"+id).attr("src",src);
+                    },
+                    'Error': function(up, err, errTip) {
+                        //上传出错时,处理相关的事情
+                    },
+                    'UploadComplete': function() {
+                        //队列文件处理完毕后,处理相关的事情
+                    },
+                    'Key': function(up, file) {
+                        var key = "";
+                        // do something with key here
+                        return key
+                    }
+                }
+            });
+        }
+
+    </script>
+</block>

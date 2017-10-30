@@ -1,0 +1,226 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+        h4{
+            border-bottom: 1px solid #ccc;
+            font-size: 14px;
+            font-weight: bold;
+            height: 32px;
+            margin: 0;
+            line-height: 25px;
+            padding-left: 12px;
+            margin-bottom: 10px;
+        }
+        .content{
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 50px;
+        }
+        .content span{
+            display: inline-block;
+            width: 50px;
+            margin-left: 12px;
+        }
+        .content input{
+            margin-bottom: 12px;
+            margin-top: 10px;
+            width: 240px;
+            margin-right: 12px;
+            padding-left: 12px;
+            border: 1px solid #e9e9e9;
+        }
+        .content button{
+            border: 0;
+            background: #00a0e9;
+            color: #fff;
+            font-size: 13px;
+            padding:6px 12px;
+            position: absolute;
+            left: 215px;
+        }
+        .content .error{
+            color: red;
+            font-size: 12px;
+            width: 120px;
+            position: relative;
+            left: 100px;
+            top: 6px;
+            display: none;
+        }
+        #bf{
+            color:#ff6600;
+            font-weight: bolder;
+            font-size: 14px;
+        }
+        .skm{
+            padding: 12px;
+            display: none;
+        }
+        .skmTitle{
+            font-size: 14px;
+            display: block;
+            margin-bottom: 20px;
+        }
+        .wx{
+            border: 8px solid #00cc00;
+            width: 300px;
+            height: 400px;
+            display: inline-block;
+            box-sizing: border-box;
+            margin-right: 20px;
+            float: left;
+            padding: 24px;
+            position: relative;
+
+        }
+        .zfb{
+            border: 8px solid #00a0e9;
+            width: 300px;
+            height: 400px;
+            display: inline-block;
+            box-sizing: border-box;
+            padding: 24px;
+            position: relative;
+
+        }
+        .skm .p1{
+            font-size: 12px;
+            color: #000000;
+            text-align: center;
+        }
+        .skm .p2{
+            font-size: 25px;
+            color: #0a001f;
+            font-weight: bolder;
+            text-align: center;
+        }
+        .skm .p3{
+            font-size: 14px;
+            color: #ff6600;
+            text-align: center;
+        }
+        .icon{
+            display: inline-block;
+        }
+        .icon-wx{
+            background-image: url("__IMG__/wxzf.png");
+            width: 100%;
+            height: 32px;
+            background-size: 88px 32px;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .icon-zfb{
+            background-image: url("__IMG__/zfbzf.png");
+            width: 100%;
+            height: 32px;
+            background-size: 91px 32px;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .icon-erweima{
+            margin: 0 auto;
+            display: block;
+            width: 150px;
+            height:150px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .icon-logo{
+            background-image: url("__IMG__/logo1.png");
+            background-size: 30px 30px;
+            height: 30px;
+            margin-left: -15px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-top: -30px;
+            width: 30px;
+        }
+    </style>
+</block>
+<block name="body">
+    <!--title-->
+    <h4>生成收款码</h4>
+    <!--input-->
+    <div class="content">
+        <span>车牌</span><input id="cp" type="text"></br>
+        <span>手机</span><input id="mobile" type="text"></br>
+        <span>保费</span><input id="bf" type="text" step="0.1" max="99.9" min="0">元（精确到0.1元）</br>
+        <span>备注</span><input id="bz" type="text"></br>
+        <b class="error">生成失败，请重试</b><button onclick="send()">生成二维码</button>
+    </div>
+    <!--收款码-->
+    <div class="skm">
+        <span class="skmTitle">收款码</span>
+        <!--微信二维码-->
+        <div class="wx">
+            <p class="p1"><span class="bzMsg"></span></p>
+            <p class="p2">￥<span class="bfMsg"></span></p>
+            <p class="p3">请长按识别二维码进行支付</p>
+            <div class="icon-erweima" id="wx_code"></div>
+            <i class="icon icon-logo"></i>
+            <i class="icon icon-wx"></i>
+        </div>
+        <!--支付宝二维码-->
+        <div class="zfb">
+            <p class="p1"><span class="bzMsg"></span></p>
+            <p class="p2">￥<span class="bfMsg"></span></p>
+            <p class="p3">请长按识别二维码进行支付</p>
+            <div class="icon-erweima" id="zfb_code"></div>
+            <i class="icon icon-logo"></i>
+            <i class="icon icon-zfb"></i>
+        </div>
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script type="text/javascript" src="__JS__/jquery.qrcode.min.js"></script>
+    <script>
+        function send(){
+            var error = $(".error");
+            var skm = $(".skm")
+            var cp = $("#cp").val();
+            var mobile = $("#mobile").val();
+            var bf = $("#bf").val();
+            var bfNum = parseFloat(bf).toFixed(1);
+            var bz = $("#bz").val();
+            var phoneReg = /^1[34578]\d{9}$/; //手机号正则验证
+            var bfReg = /^[0-9]+.?[0-9]*$/; //小数点和数字验证
+            var cpReg=/^[\u4e00-\u9fa5]{1}[A-Z]{1}[A-Z_0-9]{5}$/; //车牌验证
+            if(cp == '' || !cpReg.test(cp)){
+                 error.show();
+                 layer.msg("请输入正确车牌");
+                 return false;
+             }
+             if(mobile == ''|| !phoneReg.test(mobile) || mobile.length > 11){
+                 error.show();
+                 layer.msg("请输入正确手机号");
+                 return false;
+             }
+            if(bf == '' || !bfReg.test(bf)){
+                error.show();
+                layer.msg("请正确输入保费");
+                return false;
+            }
+            if(bz == ''){
+                error.show();
+                layer.msg("请填写备注");
+                return false;
+            }else{
+                error.hide();
+                skm.show();
+                $(".bzMsg").html(bz);
+                $(".bfMsg").html(bfNum);
+            }
+            $("#wx_code").html("");
+            $('#zfb_code').html("");
+            var param=encodeURIComponent(cp +'_' + bfNum + '_'+ mobile+ '_' +bz);
+            var url = 'http://wx.ebopark.com/insurance.php?param=' + param;
+            $('#wx_code').qrcode(url);
+            $('#zfb_code').qrcode(url);
+
+        }
+
+
+    </script>
+</block>

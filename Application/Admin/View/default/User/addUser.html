@@ -1,0 +1,73 @@
+<extend name="Public/base"/>
+<block name="style">
+    </block>
+<block name="body">
+    <div class="main-title">
+        <h2>添加用户&nbsp;&nbsp;&nbsp;</h2>
+    </div>
+    <div style="padding-left:10px;">
+    <form action="/index.php/Admin/User/register" class="form-horizontal"  enctype="multipart/form-data" method="post" onsubmit="return formValidate();">
+    <div class="control-group">
+        <label class="control-label" style="float:left">用户名</label>
+        <div class="controls" style="float:left;margin-left:10px;">
+            <input id="username" name="username" type="text" placeholder="请输入用户名" class="m-wrap large">
+        </div>
+
+    </div>
+    <div style="clear:both;"></div>
+    <div class="control-group" style="margin-top:10px;display:none;">
+
+        <label class="control-label" style="float:left">昵&nbsp;&nbsp;&nbsp;&nbsp;称</label>
+        <div class="controls" style="float:left;margin-left:10px;">
+            <input id="nick" name="nick" type="text" placeholder="请输入昵称" class="m-wrap large">
+        </div>
+
+    </div>
+    <div style="clear:both;"></div>
+    <div class="control-group" style="margin-top:10px;">
+
+        <label class="control-label" style="float:left">密&nbsp;&nbsp;&nbsp;&nbsp;码</label>
+        <div class="controls" style="float:left;margin-left:10px;">
+            <input id="password" name="password" type="password" placeholder="请输入密码" class="m-wrap large">
+        </div>
+
+    </div>
+    <div style="clear:both;"></div>
+    <div class="form-actions" style="padding-left:0px;background:white;border:0px;margin-top:20px;padding-left:50px;" >
+        <button type="submit" class="btn blue"><i class="icon-ok"></i> 提交</button>
+    </div>
+    </form>
+    </div>
+</block>
+
+<block name="script">
+    <link rel="stylesheet" href="__PUBLIC__/css/style-metro.css"/>
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script type="text/javascript">
+
+        function formValidate(){
+            var username=$("#username").val();
+            var nick=$("#nick").val();
+            var password=$("#password").val();
+            if(username==''||password==''){
+                layer.alert("用户名或密码不能为空!");
+                return false;
+            }
+            if(username.length>=25){
+                layer.alert("用户名过长,不能超过25个字符!");
+                return false;
+            }
+            if(password.length>=25){
+                layer.alert("密码过长,不能超过25个字符!");
+                return false;
+            }
+            if(nick!=''&&nick.length>=25){
+                layer.alert("昵称过长,不能超过25个字符!");
+                return false;
+            }
+            return true;
+        }
+        //导航高亮
+        highlight_subnav("{:U('User/addUser')}");
+    </script>
+</block>

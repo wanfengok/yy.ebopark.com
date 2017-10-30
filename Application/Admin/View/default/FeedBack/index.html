@@ -1,0 +1,204 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+        .select {
+            display: inline-block;
+            width: 100px;
+            height: 32px;
+            padding: 5px 8px;
+            font-size: 13px;
+            line-height: 1.53846154;
+            color: #222;
+            vertical-align: middle;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 20px;
+        }
+
+        table th, td {
+            text-align: center;
+        }
+    </style>
+</block>
+<block name="body">
+    <!-- 标题栏 -->
+    <div class="main-title">
+        <h2>用户反馈&nbsp;&nbsp;&nbsp;</h2>
+    </div>
+    <div class="clearfix" style="padding-bottom:20px;">
+        <div class="col-xs-8">
+            <select name="feedbackSource" class="select">
+                <option value="0">反馈来源</option>
+                <option value="1">微信</option>
+                <option value="2">app</option>
+            </select>
+            <select name="feedbackType" class="select">
+                <option value="0">反馈类型</option>
+                <option value="1">改进建议</option>
+                <option value="2">支付问题</option>
+                <option value="3">软件异常</option>
+                <option value="4">月租车位</option>
+                <option value="5">消息管理</option>
+                <option value="6">其他问题</option>
+            </select>
+            <select name="versionName" class="select">
+                <option value="">版本号</option>
+                <notempty name="versionList">
+                    <volist name="versionList" id="vo">
+                        <option value="{$vo}">{$vo}</option>
+                    </volist>
+                </notempty>
+            </select>
+            <select name="feedbackRange" class="select">
+                <option value="0">选择时间</option>
+                <option value="-7">最近7天</option>
+                <option value="-30">最近30天</option>
+                <option value="-90">最近90天</option>
+            </select>
+
+        </div>
+        <div class="col-xs-4" style="text-align:right;">
+            <button type="btn" class="btn" id="queryBtn">查询</button>
+
+        </div>
+    </div>
+    <!-- 数据列表 -->
+    <div class="data-table with-padding">
+        <table class="table table-bordered table-striped ">
+            <thead>
+            <tr>
+                <th style="min-width:60px;">序号</th>
+                <th style="min-width:80px;">反馈类型</th>
+                <th style="min-width:80px;">反馈来源</th>
+                <th style="min-width:80px;">用户名</th>
+                <th style="min-width:80px;">反馈时间</th>
+                <th>版本号</th>
+                <th>手机机型</th>
+                <th>网络</th>
+                <th>反馈内容</th>
+                <th style="min-width:80px;">状态</th>
+            </tr>
+            </thead>
+            <tbody id="tbody">
+
+            </tbody>
+        </table>
+        <div id="page" class="m-pagination"></div>
+    </div>
+    <!-- 分页 -->
+    <div class="with-padding">{$_page}</div>
+    <!-- /分页-->
+
+</block>
+<block name="script">
+
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <link rel="stylesheet" href="__PUBLIC__/js/page/jquery.pagination.css"/>
+    <script src="__PUBLIC__/js/page/jquery.pagination-1.2.7.js"></script>
+    <script src="__PUBLIC__/js/page/page.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#queryBtn").click(function () {
+                query();
+            });
+            query();
+        });
+        //拉取分页数据
+        function query() {
+            var feedbackSource = $("select[name='feedbackSource']").val();
+            var feedbackType = $("select[name='feedbackType']").val();
+            var versionName = $("select[name='versionName']").val();
+            var feedbackRange = $("select[name='feedbackRange']").val();
+
+            $("#page").page('destroy');
+            var ii = layer.msg('加载中');
+            $("#page").page({
+                debug: false,
+                showInfo: true,
+                showJump: true,
+                showPageSizes: false,
+                remote: {
+                    url: "/index.php/Admin/FeedBack/getFeedBackList",
+                    params: {
+                        "feedbackSource": feedbackSource,
+                        "feedbackType": feedbackType,
+                        "versionName": versionName,
+                        "feedbackRange": feedbackRange
+                    },
+                    success: function (data) {
+
+                        if (data.state != 0) {
+                            layer.close(ii);
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        $("#tbody").empty();
+                        $.each(data.data, function (index, item) {
+                            $("#tbody").append('<tr>' +
+                                    '<td style="text-align:center;">' + (index + 1) + '</td>' +
+                                    '<td style="text-align:center;">' + getTypeName(item.type) + '</td>' +
+                                    '<td style="text-align:center;">' + getSourceName(item.source) + '</td>' +
+                                    '<td style="text-align:center;">' + item.mobile + '</td>' +
+                                    '<td style="text-align:center;">' + item.feedback_time + '</td>' +
+                                    '<td style="text-align:center;">' + item.version_name + '</td>' +
+                                    '<td style="text-align:center;">' + item.device_type + '</td>' +
+                                    '<td style="text-align:center;">' + item.network_type + '</td>' +
+                                    '<td style="text-align:left;max-width:300px;">' + item.content + '</td>' +
+                                    '<td style="text-align:center;">' + getStatusName(item.status, item.id) + '</td>' +
+                                    '</tr>');
+                        });
+                        layer.close(ii);
+
+                    }
+                }
+            });
+        }
+
+        function getTypeName(type) {
+            var typeName = "";
+            switch (Number(type)) {
+
+                case 1:
+                    typeName = "改进建议";
+                    break;
+                case 2:
+                    typeName = "支付问题";
+                    break;
+                case 3:
+                    typeName = "软件异常";
+                    break;
+                case 4:
+                    typeName = "月租车位";
+                    break;
+                case 5:
+                    typeName = "消息管理";
+                    break;
+                case 6:
+                    typeName = "其他问题";
+                    break;
+            }
+            return typeName;
+        }
+        function getSourceName(source) {
+            return source == "1" ? "微信" : "APP";
+        }
+        function getStatusName(status, id) {
+            return status == "1" ? '已处理' : '<a href="javascript:void(0);" onclick=" updateStatus(this,' + id + ')">处理</a>';
+        }
+        function updateStatus(_self, _id) {
+            var url = " /index.php/Admin/FeedBack/updateStatus?status=1&id=" + _id;
+            var ii = layer.msg('处理中……', {icon: 16});
+            $.getJSON(url, function (data) {
+                layer.close(ii);
+                if (data.state != 0) {
+                    $.alert(data.msg);
+                    return;
+                }
+                var parentObj = $(_self).parent().eq(0);
+                $(_self).remove();
+                parentObj.append($("<span>已处理</span>"));
+            });
+        }
+    </script>
+</block>

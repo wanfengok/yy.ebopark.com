@@ -1,0 +1,179 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+        .operateBtn{
+            font-size:12px;
+            padding:0px 5px;
+            color:blue;
+
+        }
+        .operateBtn:hover{
+            cursor:pointer;
+        }
+        .td1 {
+            text-align: right;
+            width: 100px;
+        }
+        .td2 {
+            text-align: left;
+            width: 160px;
+        }
+    </style>
+</block>
+<block name="body">
+    <div class="main-title">
+        <h2 id="mytitle"></h2>
+    </div>
+<form action="./add" method="post">
+    <input id="project" name="project" type="hidden" value=""/>
+    <table cellpadding="4" cellspacing="2">
+        <tr>
+            <td class="td1">
+                <span style="color:red">*</span><label for="name">商户名称:</label>
+            </td>
+            <td class="td2">
+                <input id="name" name="name"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="td1">
+                <span style="color:red">*</span><label for="id">商户ID号:</label>
+            </td>
+            <td class="td2">
+                <input id="id" name="id"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="td1">
+                <span style="color:red">*</span><label for="address">商户地址:</label>
+            </td>
+            <td class="td2">
+                <input id="address" name="address"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="td1">
+                <span style="color:red">*</span><label for="tel">商户电话:</label>
+            </td>
+            <td class="td2">
+                <input id="tel" name="tel"/>
+            </td>
+        </tr>
+    </table>
+    <div id="sample_2_wrapper" class="dataTables_wrapper form-inline" role="grid" style="padding-left:10px;">
+        <p style="float: left;margin-left: 20px"><input id="sub1" type="button" value="保存" onclick="save()"/></p>
+        <p style="float: left;margin-left: 10px"><input id="sub2" type="button" value="返回" onclick="window.location='./merchant'"/></p>
+    </div>
+</form>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/pinyin.js"></script>
+    <script type="text/javascript">
+        var op=1;
+        var sid="0";
+        $(document).ready(function(){
+            var id=GetQueryString("id");
+            $("#name").keyup(function(){
+                if(!!id){
+                    return;
+                }
+               var val=$(this).val();
+                $("#id").val(ConvertPinyin(val));
+            });
+            query();
+        });
+
+        function query(){
+            var id=GetQueryString("id");
+            if(!id) {
+                op=1;
+                $("#mytitle").html("添加商户&nbsp;&nbsp;&nbsp;");
+                return;
+            }
+            else
+            {
+                op=2;
+                $("#mytitle").html("修改商户&nbsp;&nbsp;&nbsp;");
+                var ii=layer.msg("加载中……");
+                $.ajax({
+                    type: "POST",
+                    url: "./listMerchant?ajax=1",
+                    dataType:"json",
+                    data:"id="+id,
+                    success: function (data) {
+                        layer.close(ii);
+                        if(data.state!=0){
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        var item=data.data[0];
+                        $("#name").val(item["name"]);
+                        $("#tel").val(item["tel"]);
+                        $("#address").val(item["address"]);
+                        $("#id").val(item["id"]);
+                        $("#id").attr("disabled",true);
+                        sid=item["id"];
+                    }
+                });
+            }
+        }
+
+        function GetQueryString(name)
+        {
+            var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+            var r = decodeURIComponent(window.location.search).substr(1).match(reg);
+            if(r!=null)return  unescape(r[2]); return null;
+        }
+
+        function save(){
+            if($("#name").val().length==0){
+                alert("商户名称不能为空！");
+                $("#name").focus();
+                return false;
+            }
+            if($("#id").val().length==0){
+                alert("商户ID号不能为空！");
+                $("#id").focus();
+                return false;
+            }
+            if($("#address").val().length==0){
+                alert("商家地址不能为空！");
+                $("#address").focus();
+                return false;
+            }
+            if($("#tel").val().length==0){
+                alert("商户电话不能为空！");
+                $("#tel").focus();
+                return false;
+            }
+
+            var data="name="+ encodeURIComponent($("#name").val());
+            data+="&id="+encodeURIComponent($("#id").val());
+            data+="&address="+encodeURIComponent($("#address").val());
+            data+="&tel="+encodeURIComponent($("#tel").val());
+            data+="&sid="+sid;
+            data+="&op="+op;
+            var ii=layer.msg("操作中……");
+            $.ajax({
+                type: "POST",
+                url: "./savemerchant?ajax=1",
+                dataType:"json",
+                data:data,
+                success: function (data) {
+                    layer.close(ii);
+                    if(data.state!=0){
+                        layer.alert(data.msg);
+                        return;
+                    }
+                    else{
+                        alert("操作成功！");
+                        window.location='./merchant';
+                    }
+                }
+            });
+        }
+
+
+    </script>
+</block>

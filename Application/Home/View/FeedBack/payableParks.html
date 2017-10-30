@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="textml; charset=UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <link href="/public/common/common.css" rel="stylesheet" type="text/css" />
+    <!--<link href="/public/Home/common/coderlu.css" rel="stylesheet" type="text/css" />-->
+    <script type="text/javascript" src="/public/common/common.js"></script>
+    <script type="text/javascript" src="/public/js/fastClick.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=FCBpETlN4Snp2SfEl92y89WF"></script>
+
+    <link href="/public/common/sm.css" rel="stylesheet" type="text/css" />
+    <title>帮助详情</title>
+    <style >
+
+        body{
+            background:white;
+            width:100%;
+            height:100%;
+            font-family:"微软雅黑", "宋体", "arial", "Hiragino Sans GB", "Microsoft Yahei",  "Tahoma", "Helvetica", "STHeit";
+        }
+        .header{
+            height:auto;
+            background:#f3f3f3;
+            text-align:center;
+            padding-top:20px;
+            padding-bottom:20px;
+            float:left;
+        }
+        .cityContainer{
+            height:50px;
+            position:relative;
+            padding-left:19px;
+            padding-right:19px;
+            font-size:16px;
+            float:left;
+            width:100%;
+            background:white;
+        }
+        .cityList{
+            background:white;
+            width:160px;
+            border-radius: 6px;
+            position:absolute;
+            right:10px;
+            max-height:260px;
+            overflow:auto;
+
+        }
+
+
+        *{
+            margin:0px;
+            padding:0px;
+        }
+        .empty{
+            margin-top:100px;
+
+        }
+        .parklist li{
+            height: 70px;
+            float: left;
+            width: 100%;
+
+
+        }
+
+        .cityList li{
+            text-align:center;
+            height:40px;
+            line-height:40px;
+            font-size:14px;
+        }
+        .cityList li:hover{
+            color:#6cc3fb;
+            cursor:pointer;
+        }
+        .list-block img{
+            height: 34px;
+            float: left;
+            margin-top: 4px;
+
+        }
+        .viewmore:hover{
+            cursor:pointer;
+            color:#6cc3fb;
+        }
+        .li_parkname{
+            font-size:17px;
+        }
+        .li_parknamesec{
+            font-size:12px;
+            color:gray;
+        }
+        .arrow{
+
+            position:absolute;
+            top:45px;
+            right:16px; /* 圆角的位置需要细心调试哦 */
+            width:0;
+            height:0;
+            font-size:0;
+            border:solid 8px;
+            border-color:white  white #f3f3f3 white;
+        }
+    </style>
+</head>
+<body class="page page-current" style="background:white;">
+
+<div style="background:white;">
+
+<div class="parklist">
+
+    <!-- 添加 class infinite-scroll 和 data-distance  向下无限滚动可不加infinite-scroll-bottom类，这里加上是为了和下面的向上无限滚动区分-->
+    <div class="page_content content infinite-scroll infinite-scroll-bottom" data-distance="100" style="overflow-x:hidden;">
+        <div class="list-block" style="margin:0px;">
+            <ul class="list-container parklist_ul" >
+                <li style="background:#f3f3f3;float:left;height:auto;margin-bottom:10px;" id="fir_li">
+                    <h4 style="background:white;padding-left:20px;height:63px;line-height:63px;font-size:22px;background:#f3f3f3;">哪些停车场支持在线支付？</h4>
+                    <div class="clear:both;"></div>
+                    <div class="cityContainer">
+                        <p style="float:left;height:50px;line-height:50px;font-size:17px;">支持在线支付的停车场</p>
+                        <div style="float:right;position:relative;" id="showCityList">
+                            <span style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;height:50px;line-height:50px;float:left;font-size:16px;color:#c5c5c5;" id="city">全部</span>
+                            <img src="__IMG__/ic_monthly_guide_drop_off.png" style="height:12px;width:auto;float:left;margin-left:8px;margin-top:18px;" id="ic_monthly_guide_drop"/>
+                           <div style="position:relative;display:none;" id="parklistC">
+                               <div class="arrow"></div>
+                               <ul style="position:absolute;top:60px;right:0px;padding-left:0px;z-index:1000;background:#f3f3f3;" class="cityList">
+                                   <li name="">全部</li>
+
+                               </ul>
+                           </div>
+
+                        </div>
+
+                    </div>
+                    <div class="clear:both;"></div>
+                    <div style="padding-left:15px;padding-right:15px;float:left;width:100%;background:white;"> <div style="background:#e1e1e1;height:1px;float:left;width:100%;"></div></div>
+
+                </li>
+            </ul>
+
+        </div>
+        <!--empty-->
+        <div style="clear:both;"></div>
+        <div class="empty" style="display:none;">
+            <div style="text-align:center;">
+                <img src="__IMG__/more.png" style="width:60px;height:auto;"/>
+                <p style="color:#848484;text-align:center;margin-top:30px;width:100%;">车场持续上线中</p>
+            </div>
+
+        </div>
+        <!-- 加载提示符 -->
+        <div class="infinite-scroll-preloader">
+            <div class="preloader"></div>
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>
+<script>
+    var IMG_URL='__IMG__';
+</script>
+
+<script type="text/javascript" src="/public/common/zepto.min.js"></script>
+<script type="text/javascript" src="/public/common/sm.js"></script>
+<script type="text/javascript" src="__JS__/indicator.js?v=1.1"></script>
+</body>
+</html>

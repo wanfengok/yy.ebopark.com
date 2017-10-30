@@ -1,0 +1,566 @@
+<extend name="Public/base"/>
+<block name="style">
+    <link rel="stylesheet" href="__MODULE_STATIC__/css/addgood.css"/>
+    <link rel="stylesheet" href="__MODULE_STATIC__/css/updategood.css"/>
+    <link rel="stylesheet" href="__MODULE_STATIC__/jedate/skin/jedate.css"/>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/qiniu/moxie.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/qiniu/Plupload.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/qiniu/qiniu.min.js"></script>
+</block>
+<block name="body">
+    <div class="main-title">
+        <h2 id="mytitle">修改商品</h2>
+    </div>
+    <div class="content_top">
+        <div class="f1">
+            <input type="button" class="btn select_btn" value="+添加新频道" onclick="openUrl()"/>
+        </div>
+        <div class="f2">
+            <div>
+                <span>选择使用的频道：</span>
+                <select id="categoryid">
+                </select>
+            </div>
+            <div>
+                <span>选择供应商：</span>
+                <select id="merchantid">
+                </select>
+            </div>
+            <div>
+                <span>选择业务：</span>
+                <select id="logictype">
+                    <option value="0" selected="selected">请选择</option>
+                    <option value="3001">旅游</option>
+                    <option value="3002">洗车</option>
+                    <option value="3003">车险</option>
+                    <option value="3004">保养</option>
+                </select>
+            </div>
+        </div>
+
+    </div>
+    <div class="content_middle" >
+        <div class="separator">
+            1、基本信息
+        </div>
+        <div class="detail1">
+            <div class="item">
+                <div class="ftitle"><span class="tip">*</span><span class="title">商品名称：</span></div>
+                <div class="fcontent"><input id="name" type="text" class="baseinput"/></div>
+            </div>
+            <div class="item">
+                <div class="ftitle"><span class="tip">*</span><span class="title">商品标题：</span></div>
+                <div class="fcontent">
+                    <input id="title" type="text" class="baseinput"/>
+                    <span class="mark">（用于前端显示）</span>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ftitle"><span class="tip">*</span><span class="title">商品ID号：</span></div>
+                <div class="fcontent">
+                    <input id="id" type="text" class="baseinput" readonly/>
+                </div>
+            </div>
+            <div class="item" style="height:auto;">
+                <div class="ftitle"><span class="tip">*</span><span class="title">商品型号：</span></div>
+                <div class="fcontent" style="height:auto;">
+                    <div id="good_sub_type_c">
+
+                    </div>
+
+                    <p><a href="javascript:addGoodType();">继续添加</a></p>
+                </div>
+            </div>
+            <div style="clear:both;"></div>
+            <div class="split"></div>
+            <div class="item">
+                <div class="ftitle"><span class="tip">*</span><span class="title">运费：</span></div>
+                <div class="fcontent">
+                    <label style="padding-right:20px;">
+                        <input value="0" type="radio" name="f1" checked="checked"/>
+                        <span>免运费</span>
+                    </label>
+                    <label>
+                        <input value="1" type="radio" name="f1"/>
+                        <span>运费到付</span>
+                    </label>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ftitle"><span class="tip">*</span><span class="title">总库存：</span></div>
+                <div class="fcontent">
+                    <input id="good_total" type="text" class="baseinput" min="0" max="9"  style="color:grey;"/>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ftitle"><span class="tip">*</span><span class="title">初始已售数量：</span></div>
+                <div class="fcontent">
+                    <input id="initamount" type="text" class="baseinput" min="0" max="9"/>
+                    <span class="mark">（用于商品详情页显示）</span>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ftitle"><span class="title">商品原价：</span></div>
+                <div class="fcontent">
+                    <input id="originalprice"  type="text" class="baseinput"/>
+                    <span class="mark">（用于商品详情页显示）</span>
+                </div>
+            </div>
+            <div class="item" style="display: none;">
+                <div class="ftitle"><span class="tip">*</span><span class="title"> 商品售价：</span></div>
+                <div class="fcontent">
+                    <input id="saleprice"  type="text" class="baseinput"/>
+                    <span class="mark">（用于商品详情页显示）</span>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ftitle"><span class="tip">*</span><span class="title"> 会员优惠：</span></div>
+                <div class="fcontent">
+                    <select id="memberdiscounttype" style="width: 126px;height: 25px">
+                        <option value="0">不启用会员优惠</option>
+                        <option value="1">打折</option>
+                        <option value="2">直减</option>
+                    </select>
+                    <input id="memberdiscountval"  type="text" class="baseinput" style="width: 50px"/>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ftitle"><span class="title"> 营业时间：</span></div>
+                <div class="fcontent">
+                    <input id="shophours"  type="text" class="baseinput"/>
+                    <span class="mark">（用于部分商品前端显示）</span>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ftitle"><span class="title"> 咨询电话：</span></div>
+                <div class="fcontent">
+                    <input id="tel"  type="text" class="baseinput"/>
+                    <span class="mark">（用于前端显示）</span>
+                </div>
+            </div>
+            <div class="item">
+                <div class="ftitle"><span class="title"> 标记位置：</span></div>
+                <div class="fcontent">
+                    <input id="address" type="text" class="baseinput"/>
+                    <input type="button"  class="btn select_btn" style="height: 26px;margin-bottom: 5px;line-height: 15px;margin-left: 15px" value="+标记位置" onclick="openMark()"/>
+                    <span>经度：</span>
+                    <input id="lng" type="text" class="baseinput" style="width: 80px"/>
+                    <span>纬度：</span>
+                    <input id="lat" type="text" class="baseinput" style="width: 80px"/>
+                    <span class="mark">（用于部分商品前端显示距离）</span>
+                </div>
+            </div>
+            <div class="split"></div>
+            <div class="item" style="height: 240px;line-height: 240px">
+                <div class="ftitle"><span class="tip">*</span><span class="title"> 商品图片：</span></div>
+                <div class="fcontent">
+                    <div class="goodpic" style="float: left;background: none;border: none;width:400px;height: 240px">
+                        <div class="item" style="height: 100px;line-height: 100px">
+                                <div class="c3" style="height: 100px">
+                                    <div class="img_add_c">
+                                        <span id="lbspan" style="position:absolute;top:0px;left:0px;width:100%;height:100%;z-index: -1">+列表图</span>
+                                        <input type="button" class="btn_blue"  value="" style="background:transparent;width:100%; height:100%;border: none" ng-click="upload()" id="lbbtn"/>
+                                        <img id="lb" style="position:absolute;top:0px;left:0px;width:100%;height:100%;" src="">
+                                    </div>
+                                </div>
+                                <input type="button"  class="btn select_btn" style="margin-left: 10px;" value="预览" onclick="showimg('商品详情','lb')"/>
+                                <input type="button"  class="btn select_btn" style="margin-left: 3px" value="删除" onclick="delimg('lb')"/>
+
+                        </div>
+                        <div class="item" style="height: 100px;margin-top: 10px;line-height: 100px">
+                                <div class="c3" style="height: 100px">
+                                    <div class="img_add_c">
+                                        <span id="xjspan" style="position:absolute;top:0px;left:0px;width:100%;height:100%;z-index: -1">+细节图</span>
+                                        <input type="button" class="btn_blue"  value="" style="background:transparent;width:100%; height:100%;border: none" ng-click="upload()" id="xjbtn"/>
+                                        <img id="xj" style="position:absolute;top:0px;left:0px;width:100%;height:100%;" src="">
+                                    </div>
+                                </div>
+                                <input type="button"  class="btn select_btn" style="margin-left: 10px;" value="预览" onclick="showimg('商品详情','xj')"/>
+                                <input type="button"  class="btn select_btn" style="margin-left: 3px" value="删除" onclick="delimg('xj')"/>
+
+                        </div>
+                    </div>
+                    <div class="goodpic" style="float: left;height: 240px">
+                        <div class="item">提示：</div>
+                        <div class="item">1、列表图：显示在大频道页；</div>
+                        <div class="item">2、细节图：显示在商品详情页；</div>
+                        <div  class="item" style="float: left;width: 18px;">3、</div>
+                        <div class="item" style="float: left;width: 260px;word-wrap: break-word; ">具体尺寸大小 ：洗车列表图（220*220），洗车细节图（750*370）， 旅游列表图（*）， 旅游细节图（*）；</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="separator">
+            2、商品描述
+        </div>
+        <div class="detail2">
+            <div class="item">
+                <div class="ftitle"><span class="title">小喇叭：</span></div>
+                <div class="fcontent"><input id="tips" type="text" class="baseinput"/></div>
+            </div>
+            <div class="upload">
+                <div class="c1"><span class="title">商品详情：</span></div>
+                <div class="c2">
+                    <div class="c3">
+                        <div class="img_add_c">
+                            <span id="spxqspan" style="position:absolute;top:0px;left:0px;width:100%;height:100%;z-index: -1">+详情图</span>
+                            <input type="button" class="btn_blue"  value="" style="background:transparent;width:100%; height:100%;border: none" ng-click="upload()" id="spxqbtn"/>
+                            <img id="spxq" style="position:absolute;top:0px;left:0px;width:100%;height:100%;" src="">
+                        </div>
+                    </div>
+                    <input type="button"  class="btn select_btn" style="margin-left: 10px;" value="预览" onclick="showimg('商品详情','spxq')"/>
+                    <input type="button"  class="btn select_btn" style="margin-left: 3px" value="删除" onclick="delimg('spxq')"/>
+                    <span class="mark">（商品详情和产品特色：包括费用信息、预订须知、温馨提示、退款说明）</span>
+                </div>
+            </div>
+            <div class="upload">
+                <div class="c1"><span class="title">产品特色：</span></div>
+                <div class="c2">
+                    <div class="c3">
+                        <div class="img_add_c">
+                            <span id="cptsspan" style="position:absolute;top:0px;left:0px;width:100%;height:100%;z-index: -1">+特色图</span>
+                            <input type="button" class="btn_blue"  value="" style="background:transparent;width:100%; height:100%;border: none" ng-click="upload()" id="cptsbtn"/>
+                            <img id="cpts" style="position:absolute;top:0px;left:0px;width:100%;height:100%;" src="">
+                        </div>
+                    </div>
+                    <input type="button"  class="btn select_btn" style="margin-left: 10px;" value="预览" onclick="showimg('产品特色','cpts')"/>
+                    <input type="button"  class="btn select_btn" style="margin-left: 3px" value="删除" onclick="delimg('cpts')"/>
+                    <span class="mark"></span>
+                </div>
+            </div>
+        </div>
+        <div class="detail5">
+            <input type="button" class="btn select_btn" value="保存" onclick="savegood()"/>
+        </div>
+
+        <div id="detail2" style="width: 100%;height: auto;display: block">
+            <div class="separator">
+                3、填写订单信息
+            </div>
+            <div class="detail3">
+                <div class="item" style="margin:15px 0px">
+                    <input type="button" style="margin-left: 20px;" class="btn select_btn" value="+添加属性值" onclick="addAttr()"/>
+                    <span class="mark">（默认：票务订单属性）</span>
+                </div>
+                <div id="controlsContainer">
+                <div  name="control" ondrop="drop(event,this)" ondragover="allowDrop(event)" draggable="true" ondragstart="drag(event, this)" ctype="1" class="control" style="height: 100%">
+                    <div name="markgroup" class="markgroup">
+                        <div class="ftitle" style="height: 100%">
+                            <span class="title">出行日期</span>
+                        </div>
+                        <div class="fcontent" style="height: 100%">
+
+
+                        </div>
+                    </div>
+                    <div style="float: left;width: 100%">
+                        <div class="ftitle"></div>
+                        <div class="fcontent">
+                            <a style="color: #666666;cursor: pointer" onclick="addOutDate(this)">+继续添加</a>
+                        </div>
+                    </div>
+                    <div class="split"></div>
+                </div>
+
+                <div name="control" ondrop="drop(event,this)" ondragover="allowDrop(event)" draggable="true" ondragstart="drag(event, this)" ctype="2" class="control">
+                    <div class="ftitle">
+                        <span class="title">e泊特价</span>
+                    </div>
+                    <div class="fcontent">
+                        <input type="button"  class="btn select_btn" value="生成列表" onclick="generateEboPrices(this);"/>
+                        <a title="删除" class="x" onclick="$(this).parent().parent().css('display','none')">X</a>
+                    </div>
+                    <div style="width: 100%;float: left">
+                    </div>
+                    <div class="ftitle" >
+                    </div>
+                    <div class="fcontent pricecontent" style="height: 100%">
+
+                    </div>
+
+                </div>
+
+                <div name="control" ondrop="drop(event,this)" ondragover="allowDrop(event)" draggable="true" ondragstart="drag(event, this)" ctype="3" class="control" style="height: 100%">
+                    <div name="markgroup" class="markgroup">
+                        <div class="ftitle" style="height: 100%">
+                            <span class="title">描述</span>
+                        </div>
+                        <div class="fcontent fcontentRootContainer" style="height: 100%">
+
+
+                        </div>
+                    </div>
+                    <div style="float: left;width: 100%">
+                        <div class="ftitle"></div>
+                        <div class="fcontent">
+                            <a style="color: #666666;cursor: pointer" onclick="addGoodsDesc(this)">+继续添加</a>
+                        </div>
+                    </div>
+                    <div class="split"></div>
+                </div>
+
+                <div name="control" ondrop="drop(event,this)" ondragover="allowDrop(event)" draggable="true" ondragstart="drag(event, this)" ctype="4" class="control">
+                    <div class="ftitle">
+                        <span class="title">购买数量</span>
+                    </div>
+                    <div class="fcontent">
+                        <input name="contact" type="text" value="用户填写" disabled="disabled"  class="baseinput"/>
+                        <input type="checkbox" class="enableLimit" style="margin:0px 3px 0px 20px"><label>用户ID限购</label>
+                        <input type="text"  class="baseinput limitNum"  style="width: 40px"/>
+                        <a title="删除" class="x" onclick="$('div[ctype=4]').hide();">X</a>
+                    </div>
+                    <div class="split"></div>
+                </div>
+
+                <div name="control" ondrop="drop(event,this)" ondragover="allowDrop(event)" draggable="true" ondragstart="drag(event, this)" ctype="5" class="control">
+                    <div class="ftitle">
+                        <span class="title">联系人</span>
+                    </div>
+                    <div class="fcontent">
+                        <input name="contact" type="text" value="用户填写" disabled="disabled"  class="baseinput"/>
+                        <a title="删除" class="x" onclick="$('div[ctype=5]').hide();">X</a>
+                    </div>
+                    <div class="split"></div>
+                </div>
+
+                <div name="control" ondrop="drop(event,this)" ondragover="allowDrop(event)" draggable="true" ondragstart="drag(event, this)" ctype="6" class="control">
+                    <div class="ftitle">
+                        <span class="title">手机号</span>
+                    </div>
+                    <div class="fcontent">
+                        <input name="mobile" type="text" value="用户填写" disabled="disabled"  class="baseinput"/>
+                        <a title="删除" class="x" onclick="$('div[ctype=6]').hide();">X</a>
+                    </div>
+                    <div class="split"></div>
+                </div>
+
+                <div name="control" ondrop="drop(event,this)" ondragover="allowDrop(event)" draggable="true" ondragstart="drag(event, this)" ctype="7" class="control">
+                    <div class="ftitle">
+                        <span class="title">身份证</span>
+                    </div>
+                    <div class="fcontent">
+                        <input name="idcard" type="text" value="用户填写" disabled="disabled"  class="baseinput"/>
+                        <a title="删除" class="x" onclick="$('div[ctype=7]').hide();">X</a>
+                    </div>
+                    <div class="split"></div>
+                </div>
+
+                <div name="control" ondrop="drop(event,this)" ondragover="allowDrop(event)" draggable="true" ondragstart="drag(event, this)" ctype="8" class="control">
+                    <div class="ftitle">
+                        <span class="title">车牌号</span>
+                    </div>
+                    <div class="fcontent">
+                        <input name="vehicle" type="text" value="用户填写" disabled="disabled"  class="baseinput"/>
+                        <a title="删除" class="x" onclick="$('div[ctype=8]').hide();">X</a>
+                    </div>
+                    <div class="split"></div>
+                </div>
+
+                <div name="control" ondrop="drop(event,this)" ondragover="allowDrop(event)" draggable="true" ondragstart="drag(event, this)" ctype="9" class="control">
+                    <div class="ftitle">
+                        <span class="title">车型</span>
+                    </div>
+                    <div class="fcontent">
+                        <input name="vehicletype" type="text" value="用户填写" disabled="disabled"  class="baseinput"/>
+                        <a title="删除" class="x" onclick="$('div[ctype=9]').hide();">X</a>
+                    </div>
+                    <div class="split"></div>
+                </div>
+
+                <div name="control" ondrop="drop(event,this)" ondragover="allowDrop(event)" draggable="true" ondragstart="drag(event, this)" ctype="10" class="control">
+                    <div class="ftitle">
+                        <span class="title">车位信息</span>
+                    </div>
+                    <div class="fcontent">
+                        <input name="parkinglot" type="text" value="用户填写" disabled="disabled"  class="baseinput"/>
+                        <a title="删除" class="x" onclick="$('div[ctype=10]').hide();">X</a>
+                    </div>
+                    <div class="split"></div>
+                </div>
+                <div name="control" ondrop="drop(event,this)" ondragover="allowDrop(event)" draggable="true" ondragstart="drag(event, this)" ctype="11" class="control" style="height: 100%">
+                    <div name="markgroup" class="markgroup">
+                        <div class="ftitle" style="height: 100%">
+                            <span class="title">取票方式</span>
+                        </div>
+                        <div class="fcontent fcontentRootContainer" style="height: 100%">
+
+
+                        </div>
+                    </div>
+                    <div style="float: left;width: 100%">
+                        <div class="ftitle"></div>
+                        <div class="fcontent">
+                            <a style="color: #666666;cursor: pointer" onclick="addPickingUpMethods(this)">+继续添加</a>
+                        </div>
+                    </div>
+                    <div class="split"></div>
+                </div>
+                </div>
+            </div>
+
+            <div class="separator">
+                4、消息通知及其他
+            </div>
+            <div class="detail4">
+                <div style="width: 100%;">
+                    <div style="float: left;width: 360px">
+                        <div class="item" style="float: left;font-weight:bold;margin-top: 10px">
+                            <span style="margin-left: 10px">|消息通知</span>
+                        </div>
+                        <div class="item" style="float: left;">
+                            <div class="ftitle"><span class="tip">*</span><span class="title"> 用户消息尾部：</span></div>
+                            <div class="fcontent" style="width: auto">
+                                <input id="MsgTailOfUser" type="text" class="baseinput"/>
+                            </div>
+                        </div>
+                        <div class="item" style="float: left">
+                            <div class="ftitle"><span class="tip">*</span><span class="title"> 商户消息尾部：</span></div>
+                            <div class="fcontent" style="width: auto">
+                                <input id="MsgTailOfMerchant" type="text" class="baseinput"/>
+                            </div>
+                        </div>
+                        <div class="item" style="float: left">
+                            <div class="ftitle"><span class="tip"></span><span class="title"> 短信消息：</span></div>
+                            <div class="fcontent" style="width: auto">
+                                <select  id="SmsTempId" style="width: 180px">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="message">
+                        <div class="item" style="margin-top: 5px"> 微信现有用户消息尾部内容：</div>
+                        <div class="item">1、 请保持手机畅通，注意查收验票短信。</div>
+                        <div class="item">2、 请保持手机畅通，商品已飞奔在路上。</div>
+                        <div class="item" style="margin-top: 10px"> 微信现有商户消息尾部消息：</div>
+                        <div class="item">1、 用户消费时，请务必核对用户的交易记录并拍照。</div>
+                        <div class="item">2、 [联系方式]、[姓名]、[数量]。</div>
+                    </div>
+                </div>
+
+                <div class="split" > </div>
+
+                <div style="float: left;width: 100%;border-radius: 5px ;">
+                    <div class="item" style="float: left;font-weight:bold;height: 20px;margin:15px 0px 10px 0px">
+                        <span style="margin-left: 10px">|分享链接</span>
+                    </div>
+                    <div style="float: left;border-radius: 5px ;width: 380px; height: 160px;;padding: 20px 30px 30px 30px ">
+                        <div class="img_add_c" style="width: 100px;height: 120px;line-height: 120px">
+                            <span id="fmspan" style="position:absolute;top:0px;left:0px;width:100%;height:100%;z-index: -1;">+封面</span>
+                            <input type="button" class="btn_blue"  value="" style="background:transparent;width:100%; height:100%;border: none" ng-click="upload()" id="fmbtn"/>
+                            <img id="fm" class="shareImgUrl" style="position:absolute;top:0px;left:0px;width:100%;height:100%;">
+                        </div>
+                        <div style="width:150px;float: left;padding-left: 15px">
+                            <div style="width: 200px;height: 30px;border: 1px solid #bdbdbd;margin-bottom: 10px;border-radius: 3px">
+                                <input id="shareTitle" type="text" style="width: 100%;height: 100%;background-color: transparent;border: none;padding: 0px 5px" value="" placeholder="请输入分享标题"/>
+                            </div>
+                            <div style="width: 200px;height: 80px;border: 1px solid #bdbdbd;border-radius: 3px">
+                                <textarea id="shareContent" style="width: 100%;height: 100%;background-color: transparent;border: none;text-align: left;overflow: auto;padding: 0px 5px" placeholder="分享到微信时的描述，点击左侧图片改封面"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="split" > </div>
+
+                <div style="float: left;width: 100%;border-radius: 5px ;">
+                    <div class="item" style="float: left;font-weight:bold;height: 20px;margin:15px 0px 10px 0px">
+                        <span style="margin-left: 10px">|订单详情备注</span>
+                    </div>
+                    <div class="item">
+                        <div class="ftitle" style="width:100%;text-align:left;"><span class="tip">*</span><span class="title">备注信息类型：</span><span onclick="selectTypes();" class="title" style="color:cornflowerblue;">选取</span>
+                            <ul class="selected_types">
+
+                            </ul>
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div style="width: 100%;height: 20px;float: left;clear:both;" > </div>
+            <div class="separator">
+                5、上下架管理
+            </div>
+            <div class="detail5">
+                <div class="item onlinetimec">
+                    <div class="ftitle"><span class="tip">*</span><span class="title">上架：</span></div>
+                    <div class="fcontent">
+                        <label style="padding-right:20px;">
+                            <input value="0" type="radio" name="f2" />
+                            <span>立即销售</span>
+                        </label>
+                        <label>
+                            <input value="1" type="radio" name="f2"/>
+                            <span>待销售</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="ftitle"><span class="tip">*</span><span class="title">上架时间：</span></div>
+                    <div class="fcontent" style="height: 30px">
+                        <div style="float: left;width: 200px">
+                            <input  id="starttime" type="text" class="baseinput" value="2099-1-1 00:00:00"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="ftitle"><span class="tip">*</span><span class="title">下架时间：</span></div>
+                    <div class="fcontent" style="height: 30px">
+                        <div style="float: left;width: 200px">
+                            <input  id="endtime" type="text" class="baseinput" value="2099-1-1 00:00:00"/>
+                        </div>
+                        <div style="float: left;width: 440px;line-height: 18px">
+                            <span class="mark" style="height: 30px;line-height:18px">（勾选“立即销售”，设置下架时间后，点击“保存”，系统会在您设置的时间自动进行下架操作，下架时间为空时，默认该商品下架时间很长。）</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="detail5">
+                <input type="button" class="btn select_btn" value="保存" onclick="updategood()"/>
+                <input type="button" class="btn select_btn" value="预览" onclick="previewgood()" style="margin-left:20px;"/>
+            </div>
+        </div>
+    </div>
+</form>
+    <div id="selectParkContainer" style="display:none;">
+        <div  class="selectParkContainer">
+                <ul class="order_detail_field">
+                    <li ctype="10101"><input class="cx" type="checkbox" id="outdate" desc="出行日期"/><label for="outdate">出行日期</label></li>
+                    <li ctype="10102"><input class="cx" type="checkbox" id="special_price" desc="e泊特价"/><label for="special_price">e泊特价</label></li>
+                    <li ctype="10211"><input class="cx" type="checkbox" id="ticket_type" desc="取票方式"/><label for="ticket_type">取票方式</label></li>
+                    <li ctype="10201"><input class="cx" type="checkbox" id="buy_amount" desc="购买数量"/><label for="buy_amount">购买数量</label></li>
+                    <li ctype="10202"><input class="cx" type="checkbox" id="contact" desc="联系人"/><label for="contact">联系人</label></li>
+                    <li ctype="10203"><input class="cx" type="checkbox" id="telnum" desc="手机号"/><label for="telnum">手机号</label></li>
+                    <li ctype="10204"><input class="cx" type="checkbox" id="idcard" desc="身份证"/><label for="idcard">身份证</label></li>
+                    <li ctype="10205"><input class="cx" type="checkbox" id="carno" desc="车牌号"/><label for="carno">车牌号</label></li>
+                    <li ctype="10206"><input class="cx" type="checkbox" id="cartype" desc="车型"/><label for="cartype">车型</label></li>
+                    <li ctype="10207"><input class="cx" type="checkbox" id="carport" desc="车位信息"/><label for="contact">车位信息</label></li>
+                    <li ctype="10209"><input class="cx" type="checkbox" id="gooddesc" desc="商品描述"/><label for="gooddesc">商品描述</label></li>
+
+                </ul>
+            <p style="text-align:center;"> <input type="button" class="btn order_detail_btn" id="order_detail_btn" value="确定"/></p>
+        </div>
+    </div>
+    <div id="qrcode">
+
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__MODULE_STATIC__/jedate/jedate.js"></script>
+    <script type="text/javascript" src="__MODULE_STATIC__/js/lib.js"></script>
+    <script type="text/javascript" src="__MODULE_STATIC__/js/qrcode.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/pinyin.js"></script>
+    <script>
+        var category=eval({$category});
+        var merchant=eval({$merchant});
+        var baseGood={$data};
+        var sms=eval({$sms});
+    </script>
+    <script type="text/javascript" src="__MODULE_STATIC__/js/good/updategood.js?v=1.2"></script>
+    <script type="text/javascript">
+        $("#initamount").onlyNum();
+    </script>
+</block>

@@ -1,0 +1,46 @@
+<html>
+<head>
+    <style>
+        body{
+            padding: 0;
+            margin: 0;
+
+        }
+        .body{
+            float: left;
+            width: 400px;
+            height: 320px;
+            text-align: center;
+        }
+        .modal-body{
+            height: 420px;
+        }
+        .lbtn{
+            width: 70px;
+            height: 30px;
+            line-height: 30px;
+            border: none;
+            background-color: #1aa5f1;
+            margin-left: 45px;
+            color: #fff;
+            border-radius: 3px;
+            font-weight: 300;
+        }
+    </style>
+</head>
+<body>
+    <div class="body">
+        <img id="img" class="img" style="margin: 0 auto; width: 400px;height: 320px"/>
+    </div>
+    <div class="body" style="height: 35px;line-height: 35px;margin-top: 10px">
+        <input class="lbtn" type="button" value="关闭" onclick="_close()"/>
+    </div>
+    <script type="text/javascript">
+        if(imgsrc){
+            $("#img").attr("src",imgsrc);
+        }
+        function _close(){
+            $('.close').click();
+        }
+    </script>
+</body></html>

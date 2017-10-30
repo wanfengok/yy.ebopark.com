@@ -1,0 +1,398 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+        .headTitle{
+            height: 31px;
+            border-bottom: 1px solid #ccc;
+            color: #445566;
+            font-size: 20px;
+            font-weight: 400;
+            padding-left: 12px;
+        }
+        .content{
+            margin: 12px;
+        }
+        .content span{
+            display: inline-block;
+            width: 130px;
+        }
+        .xxnr{
+            font-size: 14px;
+        }
+        .content div{
+            margin-bottom: 20px;
+        }
+        .xxnr #MsgNr{
+            width: 300px;
+            height:100px;
+            border: 1px solid #e9e9e9;
+            display: inline-block;
+            padding: 12px;
+            box-sizing: border-box;
+            text-align: left;
+            margin: 0;
+        }
+        .hdsj input{
+            border: 1px solid #e9e9e9;
+            width: 200px;
+        }
+        .hdsj b{
+            display: inline-block;
+            width: 40px;
+            text-align: center;
+            height: 40px;
+            line-height: 34px;
+        }
+        .tzlj input{
+            width: 300px;
+            height:30px;
+            line-height: 30px;
+            padding-left: 12px;
+            border: 1px solid #e9e9e9;
+        }
+        .xxbz input{
+            width: 300px;
+            height:30px;
+            line-height: 30px;
+            padding-left: 12px;
+            border: 1px solid #e9e9e9;
+        }
+        .ylsjh input{
+            width: 300px;
+        }
+        .someYh{
+            display: none;
+            border:1px solid #ccc;
+            padding: 12px;
+            margin-top: 10px;
+        }
+        .du_city_item{
+            width: 80px!important;
+        }
+    </style>
+</block>
+<block name="body">
+    <!-- 标题栏 -->
+    <div class="headTitle">
+        文字消息管理-><span id="title">修改消息</span>
+    </div>
+    <div class="content">
+        <!--消息内容-->
+        <div class="xxnr">
+            <span>消息内容</span>
+            <div id="MsgNr" class="content" contenteditable="true"></div>
+        </div>
+        <!--目标用户-->
+        <div class="mbyh">
+            <span>目标用户</span>
+            <select name="yh" id="yh">
+                <option value="0">全部用户</option>
+                <!--<option value="1">部分用户</option>-->
+            </select>
+            <!--&lt;!&ndash;部分用户&ndash;&gt;-->
+            <!--<div class="someYh">-->
+
+            <!--</div>-->
+        </div>
+        <!--跳转链接-->
+        <div class="tzlj">
+            <span>跳转链接</span>
+            <input type="text" id="tzlj">
+        </div>
+        <!--活动时间-->
+        <div class="hdsj">
+            <span>活动时间</span>
+            <input type="text" placeholder="" class="m-wrap medium" id="startTime" name="startTime">
+            <b>至</b>
+            <input type="text" placeholder="" class="m-wrap medium" id="endTime" name="endTime">
+
+        </div>
+        <!--消息备注-->
+        <div class="xxbz">
+            <span>消息备注</span>
+            <input type="text" id="bz">
+        </div>
+        <!--预览手机号-->
+        <div class="ylsjh">
+            <span>预览手机号（，隔开）</span>
+            <input type="text" id="mobile">
+            <button id="preview">预览</button>
+        </div>
+        <!--提交按钮-->
+        <button class="btn btn-tj" id="send">提交</button>
+    </div>
+</block>
+<block name="script">
+    <link rel="stylesheet" href="__PUBLIC__/css/style-metro.css"/>
+    <link rel="stylesheet" href="__MODULE_STATIC__/jedate/skin/jedate.css"/>
+    <script type="text/javascript" src="__MODULE_STATIC__/jedate/jedate.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <link rel="stylesheet" href="__PUBLIC__/js/page/jquery.pagination.css"/>
+    <script src="__PUBLIC__/js/page/jquery.pagination-1.2.7.js"></script>
+    <script src="__PUBLIC__/js/page/page.js"></script>
+    <script>
+        var city_parklot={$city_parklot};
+        var dataRes ={$data};
+        $(function(){
+            initAreaList();
+            initDateTimePicker();
+        });
+        function initAreaList(){
+            var citys=city_parklot.citys;
+            var length=citys.length;
+            for(var index=0;index<length;index++){
+                var selected=0;
+                $(".someYh").append('<span class="du_city_item"> <input type="checkbox" name="limitCity" city="'+citys[index]+'" id="'+citys[index]+'" '+(selected==1?"checked=\"checked\"":"")+'/><label for="'+citys[index]+'" style="padding-left:6px;">'+citys[index]+'</label></span>');
+            }
+        }
+        function initDateTimePicker() {
+            jeDate({
+                dateCell: "#startTime",
+                isinitVal: true,
+                isTime: true
+            });
+            jeDate({
+                dateCell: "#endTime",
+                isinitVal: true,
+                isTime: true
+            });
+        }
+        $(function(){
+            var getQueryString = function(name) {
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);
+                if (r != null) {
+                    return decodeURI(r[2]);
+                } else {
+                    return null;
+                }
+            };
+            var id = getQueryString("id");
+            var nowDate = '';
+            //当前时间
+            function nowdate(){
+                var d = new Date();
+                var month = d.getMonth()+1;
+                var day = d.getDate();
+                var time = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+                var mydata = d.getFullYear() + '-' +    (month<10 ? '0' : '') + month + '-' +    (day<10 ? '0' : '') + day +'  ' + time;
+                nowDate = mydata;
+            }
+            //增加
+            if(id == null){
+                $("#title").html("添加消息");
+                $("#send").on("click",function(){
+                    nowdate();
+                    //各种判断
+                    if($("#MsgNr").html()== '' ){
+                        layer.msg('请输入消息内容');
+                        return false;
+                    }
+                    if($("#tzlj").val()==''){
+                        layer.msg('请选择跳转用户');
+                        return false;
+                    }
+                    if($("#startTime").val() == ''){
+                        layer.msg('请选择开始时间');
+                        return false;
+                    }
+                    if($("#endTime").val() == ''){
+                        layer.msg('请选择结束时间');
+                        return false;
+                    }
+                    if ($("#yh").val()=='0'){
+                        var city = "全部用户";
+                    }else{
+                        var listObj=$("input[name='limitCity']:checked");
+                        var cityStr=new Array();
+                        $.each(listObj,function(){
+                            cityStr.push($(this).attr("city"));
+                        });
+                        var city =  cityStr.toString();
+                        console.log(city);
+                    }
+                    //当前时间
+                   $.ajax({
+                        type: "POST",
+                        url: "./sysMessageWzAdd",
+                        dataType:"json",
+                        data:{
+                            msg:$("#MsgNr").html(), //消息内容
+                            city:city,    //限制城市
+                            tzly:$("#tzlj").val(), //跳转链接
+                            startTime:$("#startTime").val(),//开始时间
+                            endTime:$("#endTime").val(),//结束时间
+                            mobile:$("#mobile").val(),//预览手机号
+                            bz:$("#bz").val(),//备注
+                            nowTime:nowDate,
+                            state:0
+                        },
+                        success: function () {
+                           console.log("成功")
+                        }
+                    });
+                    window.location.href='./sysMessageWzMsg.html';
+                });
+                $("#yh").change(function () {
+                    if ($("#yh").val()=='0'){
+                        $(".someYh").hide();
+                    }else{
+                        $(".someYh").show();
+                    }
+                });
+            }
+            //修改
+            else{
+                $("#title").html("修改消息");
+                var startTime = window.sessionStorage.getItem("starttime");
+                var endTime = window.sessionStorage.getItem("endtime");
+                var jumpUrl = window.sessionStorage.getItem("jumpurl");
+                var limitcity = window.sessionStorage.getItem("limitcity");
+                var content = window.sessionStorage.getItem("content");
+                for(var i=0;i<dataRes.length;i++){
+                       if(dataRes[i].id == id){
+                           $("#bz").val(dataRes[i].remark)
+                           $("#mobile").val(dataRes[i].senddesc)
+                       }
+                }
+                $("#MsgNr").html(content);
+                $("#tzlj").val(jumpUrl);
+                $("#startTime").val(startTime);
+                $("#endTime").val(endTime);
+                $("#yh").change(function () {
+                    if ($("#yh").val()=='0'){
+                        $(".someYh").hide();
+                    }else{
+                        $(".someYh").show();
+                    }
+                });
+                $("#send").on("click",function(){
+                    nowdate();
+                    if($("#MsgNr").html()== '' ){
+                        layer.msg('请输入消息内容');
+                        return false;
+                    }
+                    if($("#tzlj").val()==''){
+                        layer.msg('请选择跳转用户');
+                        return false;
+                    }
+                    if($("#startTime").val() == ''){
+                        layer.msg('请选择开始时间');
+                        return false;
+                    }
+                    if($("#endTime").val() == ''){
+                        layer.msg('请选择结束时间');
+                        return false;
+                    }
+                    if ($("#yh").val()=='0'){
+                        var city = "全部用户";
+                    }else{
+                        var listObj=$("input[name='limitCity']:checked");
+                        var cityStr=new Array();
+                        $.each(listObj,function(){
+                            cityStr.push($(this).attr("city"));
+                        });
+                        var city =  cityStr.toString();
+                        console.log(city);
+                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "./sysMessageWzSave",
+                        dataType:"json",
+                        data:{
+                            msg:$("#MsgNr").html(), //消息内容
+                            city:city,    //限制城市
+                            tzly:$("#tzlj").val(), //跳转链接
+                            startTime:$("#startTime").val(),//开始时间
+                            endTime:$("#endTime").val(),//结束时间
+                            mobile:$("#mobile").val(),//预览手机号
+                            bz:$("#bz").val(),//备注
+                            nowTime:nowDate,
+                            id:id,
+                            state:0
+                        },
+                        success: function () {
+                            console.log("成功")
+                        }
+                    });
+                    window.location.href='./sysMessageWzMsg.html';
+                });
+            }
+
+
+
+            //预览
+            $("#preview").on("click",function(){
+                nowdate();
+                if($("#MsgNr").html()== '' ){
+                    layer.msg('请输入消息内容');
+                    return false;
+                }
+                if($("#tzlj").val()==''){
+                    layer.msg('请选择跳转用户');
+                    return false;
+                }
+                if($("#startTime").val() == ''){
+                    layer.msg('请选择开始时间');
+                    return false;
+                }
+                if($("#endTime").val() == ''){
+                    layer.msg('请选择结束时间');
+                    return false;
+                }
+                if ($("#yh").val()=='0'){
+                    var city = "全部用户";
+                }else{
+                    var listObj=$("input[name='limitCity']:checked");
+                    var cityStr=new Array();
+                    $.each(listObj,function(){
+                        cityStr.push($(this).attr("city"));
+                    });
+                    var city =  cityStr.toString();
+                }
+                if(id == null){
+                    $.ajax({
+                        type: "POST",
+                        url: "./sysMessagePreviewAdd",
+                        dataType:"json",
+                        data:{
+                            msg:$("#MsgNr").html(), //消息内容
+                            city:city,    //限制城市
+                            tzly:$("#tzlj").val(), //跳转链接
+                            mobile:$("#mobile").val(),//预览手机号
+                            bz:$("#bz").val(),//备注
+                            nowTime:nowDate,
+                            state:1
+                        },
+                        success: function(){
+                            console.log("11");
+                        }
+                    });
+                    layer.msg('预览成功，请在手机上预览');
+                }else{
+                    $.ajax({
+                        type: "POST",
+                        url: "./sysMessagePreview",
+                        dataType:"json",
+                        data:{
+                            msg:$("#MsgNr").html(), //消息内容
+                            city:city,    //限制城市
+                            tzly:$("#tzlj").val(), //跳转链接
+                            mobile:$("#mobile").val(),//预览手机号
+                            bz:$("#bz").val(),//备注
+                            nowTime:nowDate,
+                            id:id,
+                            state:1
+                        },
+                        success: function(){
+                            layer.msg('请在手机上预览');
+                        }
+                    });
+                    layer.msg('预览成功，请在手机上预览');
+                }
+
+
+            });
+        })
+    </script>
+</block>

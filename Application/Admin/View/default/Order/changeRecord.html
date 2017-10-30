@@ -1,0 +1,293 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+        h4{
+            border-bottom: 1px solid #ccc;
+            font-size: 18px;
+            height: 32px;
+            margin: 0;
+            line-height: 25px;
+            padding-left: 12px;
+            margin-bottom: 10px;
+        }
+        .content{
+            width: 100%;
+            padding: 0 12px;
+        }
+        .content .content-1{
+            display: inline-block;
+            margin-right: 20px;
+            margin-top:10px;
+        }
+        .content input,select{
+            width: 120px;
+        }
+        .content span{
+            display: inline-block;
+            width: 100px;
+        }
+        .all-btn{
+            margin: 12px;
+        }
+        .all-btn .btn{
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .table-1{
+            margin: 12px;
+            text-align: center;
+        }
+        th{
+            font-size: 14px;
+            text-align: center;
+        }
+        tr td{
+            text-align: center;
+        }
+    </style>
+</block>
+<block name="body">
+    <!--title-->
+    <h4>找零记录</h4>
+    <!--content-->
+    <div class="content">
+        <div class="content-1"><span>停车场名称:</span><input type="text" id="carName"></div>
+        <div class="content-1"><span>车牌/车位:</span><input type="text" id="carCp"></div>
+        <div class="content-1">
+            <span>是否已兑换:</span>
+            <select name="" id="haveChange">
+                <option value="">全部</option>
+                <option value="">是</option>
+                <option value="">否</option>
+            </select>
+        </div>
+        <div class="content-1">
+            <span>兑换方式:</span>
+            <select name="" id="changeMode">
+                <option value="">全部</option>
+                <option value="">扫码兑换</option>
+                <option value="">人工兑换</option>
+            </select>
+        </div>
+        <div class="content-1"><span>订单开始时间:</span><input type="text" id="startTime"></div>
+        <div class="content-1"><span>订单结束时间:</span><input type="text" id="endTime"></div>
+        <div class="content-1">
+            <input style="width: 20px;" type="checkbox" name="WPC" value="WPC" id="WPC"><label for="WPC">只看无牌车</label>
+        </div>
+    </div>
+    <div class="all-btn">
+        <button class="btn" id="choose">查询</button>
+        <button class="btn" id="excl">导出</button>
+    </div>
+    <div id="sample_2_wrapper" class="dataTables_wrapper form-inline" role="grid" style="padding-left:10px;">
+        <table class="table table-striped table-bordered table-hover dataTable" id="sample_2" aria-describedby="sample_2_info">
+            <thead>
+            <tr role="row">
+                <th>停车场名称</th>
+                <th>服务类型</th>
+                <th>车牌/车位</th>
+                <th>订单号</th>
+                <th>订单时间</th>
+                <th>应收金额</th>
+                <th>抵扣金额</th>
+                <th>优惠券金额</th>
+                <th>实收金额</th>
+                <th>投币金额</th>
+                <th>找零金额</th>
+                <th>是否已兑换</th>
+                <th>兑换方式</th>
+                <th>操作人</th>
+                <th>备注</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody role="alert" aria-live="polite" aria-relevant="all" id="tbody">
+            </tbody>
+            <div id="page" class="m-pagination"></div>
+        </table>
+    </div>
+</block>
+<block name="script">
+    <link rel="stylesheet" href="__PUBLIC__/css/style-metro.css"/>
+    <link rel="stylesheet" href="__MODULE_STATIC__/jedate/skin/jedate.css"/>
+    <script type="text/javascript" src="__MODULE_STATIC__/jedate/jedate.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script src="__PUBLIC__/js/page/jquery.pagination-1.2.7.js"></script>
+    <script src="__PUBLIC__/js/page/page.js"></script>
+    <script>
+        function int(){
+            initDateTimePicker();
+            query();
+        }
+        //拉取分页数据
+        function query() {
+            $("#page").page('destroy');
+            var ii = layer.msg('加载中');
+            $("#page").page({
+                debug: false,
+                showInfo: true,
+                showJump: true,
+                showPageSizes: false,
+                remote: {
+                    url: "/index.php/Admin/Order/changeRecordPageQuery",
+                    params: {},
+                    success: function (data) {
+                        if (data.state != 0) {
+                            layer.close(ii);
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        $("#tbody").empty();
+                        $.each(data.data, function (index, item) {
+                            if(item.state == 2){
+                                item.state = '是'
+                            }else{
+                                item.state = '否'
+                            }
+                            $("#tbody").append(
+                                "<tr class='tr'  data-id='" + item.orderno +"'>" +
+                                "<td class=''>" +item.parkname+ "</td>" +
+                                "<td class=''>临停</td>" +
+                                "<td class=''>" +item.carno+ "</td>" +
+                                "<td class=''>" +item.orderno+ "</td>" +
+                                "<td class=''>" +item.rowtime+ "</td>" +
+                                "<td class=''>" +item.totalmoney+ "</td>" +
+                                "<td class=''>" +item.dedumoney+ "</td>" +
+                                "<td class=''>" +item.couponmoney+ "</td>" +
+                                "<td class=''>" +item.paymoney+ "</td>" +
+                                "<td class=''>"+item.paymoney+"</td>" +
+                                "<td class=''>" +item.refundmoney+ "</td>" +
+                                "<td class=''>" +item.state+ "</td>" +
+                                "<td class=''>" +(item.refundusertoken == null?'扫码兑换':'人工兑换')+ "</td>" +
+                                "<td class=''>" +item.refundusertoken+"</td>" +
+                                "<td class=''>" + item.description+ "</td>" +
+                                "<td class=''>" +
+                                    "<span class='check'>查看</span></br>" +
+                                    "<span class='exchange'>"+(item.state == '是'?'已兑换':'完成兑换')+"</span>" +
+                                "</td>" +
+                                "</tr>"
+                            );
+                        });
+                        layer.close(ii);
+                    }
+                }
+            });
+        }
+        //查询条件
+        $("#choose").on("click",function(){
+            var haveChange = $("#haveChange").find("option:selected").text();
+            var changeMode = $("#changeMode").find("option:selected").text();
+            var carName = $("#carName").val();
+            var carCp = $("#carCp").val();
+            var startTime = $("#startTime").val();
+            var endTime = $("#endTime").val();
+            if($('#WPC').is(':checked')){
+                carCp = "";
+            }
+            var ret = {
+                haveChange:haveChange,
+                changeMode:changeMode,
+                carName:carName,
+                carCp:carCp,
+                startTime:startTime,
+                endTime:endTime
+            };
+            $.ajax({
+                type:'POST',
+                data:ret,
+                url:"./changerecordMsg",
+                success:function(data){
+                    $("#tbody").empty();
+                    $.each(data, function (index, item) {
+                        if(item.state == 2){
+                            item.state = '是'
+                        }else{
+                            item.state = '否'
+                        }
+                        $("#tbody").append(
+                            "<tr class='tr'  data-id='" + item.orderno +"'>" +
+                            "<td class=''>" +item.parkname+ "</td>" +
+                            "<td class=''>临停</td>" +
+                            "<td class=''>" +item.carno+ "</td>" +
+                            "<td class=''>" +item.orderno+ "</td>" +
+                            "<td class=''>" +item.rowtime+ "</td>" +
+                            "<td class=''>" +item.totalmoney+ "</td>" +
+                            "<td class=''>" +item.dedumoney+ "</td>" +
+                            "<td class=''>" +item.couponmoney+ "</td>" +
+                            "<td class=''>" +item.paymoney+ "</td>" +
+                            "<td class=''>"+item.paymoney+"</td>" +
+                            "<td class=''>" +item.refundmoney+ "</td>" +
+                            "<td class=''>" +item.state+ "</td>" +
+                            "<td class=''>" +(item.refundusertoken == null?'扫码兑换':'人工兑换')+ "</td>" +
+                            "<td class=''>" +item.refundusertoken+"</td>" +
+                            "<td class=''>" + item.description+ "</td>" +
+                            "<td class=''>" +
+                            "<span class='check'>查看</span></br>" +
+                            "<span class='exchange'>"+(item.state == '是'?'已兑换':'完成兑换')+"</span>" +
+                            "</td>" +
+                            " </tr>"
+                        );
+                    });
+                    layer.close(ii);
+                }
+            })
+        });
+        //表单导出
+        $("#excl").on("click",function(){
+            var haveChange = $("#haveChange").find("option:selected").text();
+            var changeMode = $("#changeMode").find("option:selected").text();
+            var carName = $("#carName").val();
+            var carCp = $("#carCp").val();
+            var startTime = $("#startTime").val();
+            var endTime = $("#endTime").val();
+            if($('#WPC').is(':checked')){
+                carCp = "";
+            }
+            window.location.href = './export?haveChange='+haveChange
+                + '&changeMode='+changeMode
+                +'&carName='+carName
+                +'&carCp='+carCp
+                +'&startTime=' +startTime
+                +'&endTime='+endTime;
+        });
+        //完成兑换
+        $('#sample_2_wrapper').on('click', '.exchange', function(){
+            var textThis = $(this).text();
+            if(textThis == '完成兑换'){
+                 var id = $(this).parents('tr').attr("data-id");
+                 $.ajax({
+                     type:'POST',
+                     url:'./changeState',
+                     data:{
+                         id:id
+                     },
+                     success:function(){
+                         window.location.reload();
+                     }
+                 })
+            }else{
+                alert("已兑换")
+            }
+        });
+        //查看
+        $('#sample_2_wrapper').on('click', '.check', function() {
+            var id = $(this).parents('tr').attr("data-id");
+            var name='zl';
+            window.location.href='./changeRecordDetails.html?name='+name+'&id='+id;
+        });
+        //日期选择控件
+        function initDateTimePicker() {
+            jeDate({
+                dateCell: "#startTime",
+                isinitVal: true,
+                isTime: true
+            });
+            jeDate({
+                dateCell: "#endTime",
+                isinitVal: true,
+                isTime: true
+            });
+        }
+        int();
+    </script>
+</block>

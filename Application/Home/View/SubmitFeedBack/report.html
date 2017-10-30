@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta http-equiv="Content-Type" content="textml; charset=UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+
+
+
+    <link href="/public/common/sm.css" rel="stylesheet" type="text/css"/>
+
+
+    <title>意见反馈</title>
+
+    <script type="text/javascript" src="/public/js/jquery-2.0.3.min.js" ></script>
+    <!--<script type="text/javascript" src="/public/common/layer/layer.js" ></script>-->
+    <link href="/public/common/coderlu.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="/public/common/coderlu.js" ></script>
+
+    <style>
+
+        a {
+            color: #000000;
+
+        }
+
+
+        .row .col-33 p a {
+            background-color: white;
+            height: 40px;
+
+            line-height: 40px;
+            color: black;
+        }
+
+
+        .content-padded p {
+            font-size: 14px;
+            color: gray;
+        }
+
+        .row {
+            margin-top: 20px;
+        }
+
+        .text-content {
+            height: 160px;
+            width: 94%;
+            margin-top: 20px;
+            margin-left: 3%;
+            margin-top: 0px;
+
+            border-color: white;
+            border-width: 0px;
+
+            border-radius: 4px;
+
+        }
+        #limitStr{
+            position:absolute;
+            bottom:10px;
+            right:4%;
+            font-size:14px;
+            color:#dbdbdb;
+        }
+        #content{
+            font-size:14px;
+        }
+    </style>
+
+    <script type="application/javascript">
+
+
+        var type=1;
+        var content;
+        $(function(){
+            $("#content").bind("input propertychange",function(){
+                //监听内容
+                var content=$(this).val();
+                var length=content.length;
+                if(length>100){
+                    $(this).val(content.substr(0,100));
+
+                }
+                var content=$(this).val();
+                var length=content.length;
+                $("#limitStr").text(content.length+"/100");
+
+            });
+            $('.button-light').on('click',function(){
+
+                $(".button-light").css("background-color","white");
+                $(".button-light").css("color","black");
+                $(".button-light").css("border-width","1px");
+
+
+                $(this).css("background-color","#00b4ef");
+                $(this).css("color","white");
+                $(this).css("border-width","0px");
+
+                type = $(this).attr('type');
+
+            });
+        });
+        function submit(){
+            content=$("#content").val();
+            if($.trim(content)==""){
+                $.toast("内容不能为空");
+                return;
+            }
+            var url="/index.php/Home/SubmitFeedBack/submitForm?content="+content+"&type="+type;
+            $.showPreloader();
+            $.getJSON(url,function(data){
+                $.hidePreloader();
+                if(data.state!=0){
+                    $.alert(data.msg);
+                    return;
+                }
+                //提交成功
+                $.alert('提交成功',function(){
+                    window.history.back(-1);
+
+                });
+            });
+
+
+        }
+    </script>
+
+</head>
+<body>
+
+<div class="content">
+
+    <div class="content-padded">
+        <p>请选择您要反馈的问题(单选)</p>
+    </div>
+
+
+    <div class="content-padded grid-demo">
+
+        <div class="row">
+
+            <div class="col-33"><p ><a type="1" class="button button-light" style="background-color: #00b4ef;color: white;border-width: 0px;">改进建议</a></p></div>
+            <div class="col-33"><p><a type="2" href="#" class="button button-light">支付问题</a></p></div>
+            <div class="col-33"><p><a type="3" href="#" class="button button-light">软件异常</a></p></div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-33"><p><a type="4" href="#" class="button button-light">月租车位</a></p></div>
+            <div class="col-33"><p><a type="5" href="#" class="button button-light">消息推送</a></p></div>
+            <div class="col-33"><p><a type="6" href="#" class="button button-light">其它问题</a></p></div>
+        </div>
+
+    </div>
+
+
+
+    <div class="content-padded" style="margin-top: 40px;">
+        <p>请详细写下您的建议和感想吧：</p>
+    </div>
+
+    <div class="item-input" style="position:relative;">
+        <textarea  class="text-content" id="content" onpropertychange=""></textarea>
+        <span id="limitStr">0/100</span>
+    </div>
+
+
+    <div class="content-block">
+        <p><a href="javascript:submit();" class="button" style="height: 50px;line-height: 50px;background-color:#00b4ef;color: white;font-size: 16px;">提交反馈</a></p>
+    </div>
+
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+        .filterContainer li{
+            float:left;
+            margin-right:10px;
+            font-size:14px;
+            height:30px;
+            line-height:30px;
+            min-width:120px;
+            text-align:center;
+        }
+        .filterContainer li:hover{
+            cursor:pointer;
+        }
+        .filterContainer li.active{
+            border-bottom:blue solid 2px;
+        }
+        .select_c li{
+            list-style-type:none;
+        }
+          .select_btn{
+            width:65px;
+            height:30px;
+            display:inline-block;
+            margin-right:10px;
+        }
+        .operateBtn{
+            font-size:12px;
+            padding:0px 5px;
+            color:blue;
+        }
+        .operateBtn:hover{
+            cursor:pointer;
+        }
+    </style>
+</block>
+<block name="body">
+    <div class="main-title">
+        <h2>微信消息&nbsp;&nbsp;&nbsp;</h2>
+    </div>
+    <div class="portlet box gray" style="padding-left:10px;">
+        <div class="portlet-body">
+            <div class="filterContainer">
+                <a href="/index.php/Admin/MessageManager/wxMessageAdd" target="_self"><input type="button" value="添加消息" class="btn  select_btn" style="width:90px;height:35px;padding:0px;"/></a>
+                <div class="select_c" style="margin-top:10px;">
+                    <ul>
+                        <li class="active" code="103">入场通知</li>
+                        <li code="106">车辆出场提醒</li>
+                        <li code="901">登录成功提醒</li>
+                        <li code="801">优惠返还通知</li>
+                        <li code="601,602,603">车牌找回提醒</li>
+                        <li code="1001,1002">洗车活动</li>
+                        <li code="1101">商户订单通知</li>
+                        <li code="402">月租会员过期提醒</li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+            <div style="clear:both;"></div>
+            <table class="table table-hover table-striped" style="margin-top:20px;font-size:12px;">
+                <thead>
+                <tr style="background:#eee;">
+                    <th role="columnheader"  style="text-align:center;">序号</th>
+                    <th role="columnheader"  style="text-align:center;">标题</th>
+                    <th role="columnheader"  style="text-align:center;">消息备注</th>
+                    <th role="columnheader"  style="text-align:center;">触发条件</th>
+                    <th role="columnheader" style="text-align:center;" >发布范围</th>
+                    <th role="columnheader"  style="text-align:center;">跳转动作</th>
+                    <th role="columnheader"  style="text-align:center;">操作人</th>
+                    <th role="columnheader"  style="text-align:center;">操作时间</th>
+                    <th role="columnheader"  style="text-align:center;">开始时间</th>
+                    <th role="columnheader"  style="text-align:center;">结束时间</th>
+                    <th role="columnheader"  style="text-align:center;">发送数</th>
+                    <th role="columnheader"  style="text-align:center;">操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+
+
+</block>
+<block name="script">
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <link rel="stylesheet" href="__PUBLIC__/js/page/jquery.pagination.css"/>
+    <script src="__PUBLIC__/js/page/jquery.pagination-1.2.7.js"></script>
+    <script src="__PUBLIC__/js/page/page.js"></script>
+    <script type="text/javascript" src="__JS__/msg_weixin_list.js"></script>
+</block>

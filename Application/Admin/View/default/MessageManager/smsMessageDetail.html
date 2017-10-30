@@ -1,0 +1,145 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+
+        .content {
+            margin-bottom: 20px;
+            height: 100%;
+            width: 100%;
+        }
+
+        .div1 {
+            height: 530px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .div1 div {
+            margin-left: 100px;
+        }
+
+        .messageTitile {
+            margin-top: 5px;
+            width: 200px;
+            margin-bottom: 20px;
+
+        }
+
+        .textContent {
+            width: 260px;
+            height: 100px;
+            border-width: 1px;
+            border-color: darkgray;
+        }
+
+        hr {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .clear {
+            height: 0px;
+            font-size: 0;
+            clear: both;
+        }
+
+        .submitBut {
+            font-weight: 200;
+            font-size: 14px;
+            text-align: center;
+            color: white;
+            width: 100px;
+            height: 30px;
+            background-color: #1aa5f1;
+            border-radius: 3px;
+            border: 1px solid #1aa5f1;
+            margin-left: 350px;
+            margin-top: 10px;
+        }
+
+    </style>
+</block>
+<block name="body">
+    <!-- 标题栏 -->
+    <div class="main-title">
+        <h2>短信消息详情&nbsp;&nbsp;&nbsp;</h2>
+    </div>
+    <div class="content" style="padding-left:10px;">
+
+        <div class="div1">
+
+
+
+            <div style="margin-top: 20px;">
+                <span class="mTitle">消息标题:</span>
+
+                <input class="messageTitile" type="text" disabled="disabled">
+            </div>
+
+            <div style="margin-top: 20px;">
+
+                <span class="mContent" style="float:left;">消息内容:</span>
+                <textarea class="textContent msgContent" style="float:left;"> </textarea>
+                <span class="textContentDesc"
+                      style="color: gray;max-width:500px;padding-left:10px;display:inline-block;">占位符：[月租到期日期]、[停车场名称]、[时段月租开始时间]、[时段月租结束时间]、[实收]、[剩余金额]、[购买数量]、[月租到期日期]、[车牌号]、[验证码]、[有效时间]、[应收]、[实收]、 [链接地址]  </span>
+
+            </div>
+
+
+            <div class="clear"></div>
+
+
+            <hr/>
+
+
+
+
+            <div>
+                <button class="submitBut" type="button">提交</button>
+            </div>
+        </div>
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script type="text/javascript">
+        var messageObj = {$msgObj};
+
+        $(function () {
+            initPage();
+            $(".submitBut").click(function(){
+                submit();
+            });
+        });
+        function submit(){
+                var content=$(".msgContent").val();
+                if(content==""){
+                    layer.alert("标题或内容不能为空");
+                    return;
+                }
+                if(content.length>200){
+                    layer.alert("内容过长,不能超过100个字符");
+                    return;
+                }
+
+
+            $.getJSON('./smsModify',{"content":content,"id":messageObj.id},function(data){
+
+                if(data.state!=0){
+                    layer.alert(data.msg);
+                    return;
+                }
+                layer.alert("更新成功",function(){
+                    window.location.href="./smsList";
+                });
+            });
+
+        }
+        function initPage() {
+            $(".messageTitile").eq(0).val(messageObj.title);
+            $(".msgContent").eq(0).val(messageObj.content);
+        }
+
+
+    </script>
+</block>

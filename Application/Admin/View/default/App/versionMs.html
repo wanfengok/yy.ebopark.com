@@ -1,0 +1,111 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+    .wrap_line{
+        float:left;width:100%;height:220px;padding-top:20px;
+    }
+    .btn.blue {
+        color: white;
+        text-shadow: none;
+        background-color: #4d90fe;
+        width:120px;
+        height:36px;
+        margin-top:20px;
+    }
+    .apk_info{
+        color:#909090;display:inline-block;min-width: 100px;
+    }
+    </style>
+</block>
+<block name="body">
+    <!-- 标题栏 -->
+    <div class="main-title">
+        <h2>android app版本管理&nbsp;&nbsp;&nbsp;</h2>
+    </div>
+    <div class="portlet box gray" style="padding-left:10px;">
+        <div class="portlet-body">
+            <div class="content-padded">
+                <form action="./updateSdk" method="post" enctype="multipart/form-data" onsubmit="return formCheck();">
+
+                    <div class="wrap_line">
+                        <div style="float:left;width:15%;font-size:18px;"><span style="display:inline-block;height:40px;line-height:40px;color:#909090;"><span style="color:red;font-size:14px;padding-right:5px;">*</span>安装包</span></div>
+                        <div style="float:left;widht:80%;">
+                            <div style="border:1px solid gray;height:180px;width:180px;float:left;position:relative;overflow:hidden;">
+
+                                <img src="__IMG__/apk.jpg" style="height:70px;position:absolute;top:50%;margin-top:-35px;left:50%;margin-left:-35px;"/>
+                                <p style="position:absolute;width:100%;text-align:center;top:50%;margin-top:40px;" id="apkname">更新安装包</p>
+                                <input  type="file" style="display:block;position:absolute;top:0px;left:0px;width:100%;height:100%;padding-top:100%;" name="apkfile" id="apkfile"/>
+                            </div>
+                            <div style="float:left;margin-left:20px;">
+                                <neq name="versioncode" value="">
+                                    <div style="height:36px;line-height:36px;font-size:16px;"><span class="apk_info">版本标识</span><span>{$versioncode}</span></div>
+                                </neq>
+                                <neq name="versionname" value="">
+                                    <div style="height:36px;line-height:36px;font-size:16px;"><span class="apk_info">版本号</span><span>{$versionname}</span></div>
+                                </neq>
+                                <neq name="package" value="">
+                                    <div style="height:36px;line-height:36px;font-size:16px;"><span class="apk_info">包名</span><span>{$package}</span></div>
+                                </neq>
+                                <neq name="url" value="">
+                                    <div style="height:36px;line-height:36px;font-size:16px;"><span class="apk_info">安装包地址</span><span>{$url}</span></div>
+                                </neq>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wrap_line" style="height:120px;">
+                        <div style="float:left;width:15%;font-size:18px;"><span style="display:inline-block;height:40px;line-height:40px;color:#909090;"><span style="color:red;font-size:14px;padding-right:5px;">*</span>更新说明</span></div>
+                        <div style="float:left;width:80%;">
+                        <textarea
+                                id="content"
+                                style="height:100px;width:80%;display:block;"
+                                placeholder="0-100字内容"
+                                name="content"
+                        >{$content}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-actions" style="padding-left:0px;text-align:center;background:white;border:0px;">
+                        <button type="submit" class="btn blue"><i class="icon-ok"></i> 提交</button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script type="text/javascript">
+        function formCheck(){
+                var file=$("#apkfile").val();
+                 var content=$("#content").val();
+                if(file==''){
+                    layer.alert("上传文件不能为空");
+                    return false;
+                }
+                if(content==""){
+                    layer.alert("更新说明不能为空");
+                    return false;
+                }
+                if(content.length>=100){
+                    layer.alert("更新说明过长,不能超过100字");
+                    return false;
+                }
+            return true;
+        }
+        $(function(){
+            $("#apkfile").change(function(){
+                var filePath=$("#apkfile").val();
+                $("#apkname").text(getFileName(filePath));
+            })
+        });
+        function getFileName(o){
+            var pos=o.lastIndexOf("\\");
+            return o.substring(pos+1);
+        }
+    </script>
+</block>

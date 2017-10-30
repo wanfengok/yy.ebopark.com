@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="textml; charset=UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="/public/common/common.css"/>
+    <script type="text/javascript" src="/public/js/jquery-2.0.3.min.js" ></script>
+    <script type="text/javascript" src="/public/common/common.js"></script>
+
+
+    <title>反馈与帮助</title>
+    <style>
+        .title{
+            height:42px;background:#e1e1e1;color:#848484;font-size:14px;line-height:52px;padding-left:15px;
+        }
+        .header_ul{
+            margin-top:22px;
+
+        }
+        .header_ul li{
+            float:left;
+            width:33.33%;
+            text-align:center;
+        }
+        .header_ul_logo{
+            width:30px;
+            height:30px;
+        }
+        .header_ul_label{
+            font-size:16px;
+        }
+        .wrap_item_title_left{
+            float:left;
+            margin-top:18px;
+        }
+        .wrap_item_title_left img{
+            float:left;
+            height:20px;
+            margin-right:5px;
+        }
+
+        .wrap_item_title_left span{
+            float:left;
+            font-size:18px;
+            color:#46b5fc;
+            height:18px;
+            line-height:22px;
+        }
+        .wrap_item_title_right{
+            float:right;
+        }
+        .wrap_item_title_right img{
+            height:14px;
+        }
+        .wrap_item_title_right span{
+            height:14px;
+            color:#848484;
+
+        }
+        .wrap_item_title_right{
+            margin-top:18px;
+        }
+        .quests{
+            margin-top:20px;
+            margin-left:15px;
+            font-size:16px;
+        }
+         .quests_not_fir{
+           margin-top:24px;
+        }
+        .wrap_item{
+            padding-bottom:30px;
+            border-bottom:1px solid #e1e1e1;
+            margin-left:15px;
+            margin-right:15px;
+        }
+        .footer{
+            padding-left:5%;
+            padding-right:5%;
+            height:60px;
+            padding-bottom:10px;
+            position:fixed;
+            bottom:0px;
+            width:100%;
+            background:white;
+        }
+        .question_container{
+            margin-bottom:70px;
+        }
+
+        a{
+            text-decoration:none;
+        }
+    </style>
+
+
+
+
+</head>
+<body>
+
+<p class="title">使用帮助</p>
+    <ul class="header_ul">
+        <li>
+            <a href="/index.php/Home/FeedBack/parkfee"><img src="__IMG__/fb_pay.png" class="header_ul_logo"/></a>
+            <p class="header_ul_label">停车缴费</p>
+        </li>
+        <li>
+            <a href="/index.php/Home/FeedBack/carManage"><img src="__IMG__/fb_car.png" class="header_ul_logo"/></a>
+            <p class="header_ul_label">车辆管理</p>
+        </li>
+        <li>
+            <a href="/index.php/Home/FeedBack/monthRenew"><img src="__IMG__/fb_renew.png" class="header_ul_logo"/></a>
+            <p class="header_ul_label">月租续费</p>
+        </li>
+    </ul>
+<div style="clear:both;"></div>
+<p class="title" style="margin-top:22px;">常见问题</p>
+<div class="question_container">
+    <!--支付停车费-->
+    <div class="wrap_item">
+        <!--title-->
+        <div class="wrap_item_title_c">
+            <div class="wrap_item_title_left">
+                <img src="__IMG__/fb_divider.png"/>
+                <span>支付停车费</span>
+            </div>
+            <div class="wrap_item_title_right">
+                <a href="__APP__/Home/MoreIssues/payParkFee">
+                <span>更多</span>
+                <img src="__IMG__/fb_right_gray_arrow.png"/>
+                </a>
+            </div>
+        </div>
+        <div style="clear:both;"></div>
+        <ul class="quests">
+            <li class="quests_fir"><a href="/index.php/Home/FeedBack/payableParks" target="_self">哪些停车场支持在线支付？</a></li>
+            <li class="quests_not_fir"><a href="__APP__/Home/Detail/payParkFee2" target="_self">出口重复缴费怎么办？</a></li>
+            <li class="quests_not_fir"><a href="__APP__/Home/Detail/payParkFee3" target="_self">手机支付后，出场不抬杆？</a></li>
+        </ul>
+        <!--title end-->
+    </div>
+    <!--支付停车费 end-->
+    <!--支付停车费-->
+    <div class="wrap_item">
+        <!--title-->
+        <div class="wrap_item_title_c">
+            <div class="wrap_item_title_left">
+                <img src="__IMG__/fb_divider.png"/>
+                <span>月租服务</span>
+            </div>
+
+            <div class="wrap_item_title_right">
+                <a href="__APP__/Home/MoreIssues/monthlyService">
+                <span>更多</span>
+                <img src="__IMG__/fb_right_gray_arrow.png"/>
+                </a>
+            </div>
+
+        </div>
+        <div style="clear:both;"></div>
+        <ul class="quests">
+            <li class="quests_fir"><a href="__APP__/Home/Detail/monthlyService1" target="_self">如何购买月租?</a></li>
+            <li class="quests_not_fir"><a href="__APP__/Home/FeedBack/monthlypayableParks" target="_self">哪些停车场支持在线月租续费?</a></li>
+            <li class="quests_not_fir"><a href="__APP__/Home/Detail/monthlyService3" target="_self">我的月租车位不能续费?</a></li>
+        </ul>
+        <!--title end-->
+    </div>
+    <!--支付停车费 end-->
+    <!--支付停车费-->
+    <div class="wrap_item">
+        <!--title-->
+        <div class="wrap_item_title_c">
+            <div class="wrap_item_title_left">
+                <img src="__IMG__/fb_divider.png"/>
+                <span>消息推送</span>
+            </div>
+            <div class="wrap_item_title_right">
+                <a href="__APP__/Home/MoreIssues/messagePush">
+                <span>更多</span>
+                <img src="__IMG__/fb_right_gray_arrow.png"/>
+                </a>
+            </div>
+        </div>
+        <div style="clear:both;"></div>
+        <ul class="quests">
+            <li class="quests_fir"> <a href="__APP__/Home/Detail/messagePush1" target="_self">如何查看停车记录?</a></li>
+            <li class="quests_not_fir"> <a href="__APP__/Home/Detail/messagePush2" target="_self">车辆未入场,收到进出场消息?</a></li>
+            <li class="quests_not_fir"> <a href="__APP__/Home/Detail/messagePush3" target="_self">车辆入场,未收到入场消息?</a></li>
+        </ul>
+        <!--title end-->
+    </div>
+    <!--支付停车费 end-->
+</div>
+
+<div class="footer">
+    <a href="__APP__/Home/SubmitFeedBack/report">
+    <input type="button"  class="btn_blue" style="height:40px;width:100%;" value="我要反馈"/>
+    </a>
+</div>
+</body>
+</html>

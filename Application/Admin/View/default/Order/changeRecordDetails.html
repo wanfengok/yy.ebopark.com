@@ -1,0 +1,146 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+        h4{
+            border-bottom: 1px solid #ccc;
+            font-size: 18px;
+            height: 32px;
+            margin: 0;
+            line-height: 25px;
+            padding-left: 12px;
+            margin-bottom: 10px;
+        }
+        .content{
+            padding: 20px;
+        }
+        .content p{
+            width: 100%;
+            font-size: 16px;
+        }
+        .input-all .content-1{
+            display: inline-block;
+            margin-right: 150px;
+            margin-bottom: 20px;
+        }
+        .input-all .content-1 input{
+            width: 230px;
+            height: 30px;
+            line-height: 30px;
+            background: #c7c7c7;
+            border:1px solid #c7c7c7;
+        }
+        .input-all .content-1 span{
+            display: inline-block;
+            width: 100px;
+        }
+        .send-btn{
+            display: block;
+            border-radius: 5px;
+            width: 50px;
+            border: 1px solid #CCCCCC;
+            color: #000;
+            background: #fff;
+            margin-top: 20px;
+        }
+    </style>
+</block>
+<block name="body">
+    <!--title-->
+    <h4>订单详情</h4>
+    <!--content-->
+    <div class="content">
+        <p>订单信息：</p>
+        <div class="input-all">
+            <div class="content-1"><span id="orderno">订单号:</span><input id="orderno_inp" type="text" readonly></div>
+            <div class="content-1"><span id="carno">车位/车牌:</span><input id="carno_inp" type="text" readonly></div>
+            <div class="content-1"><span id="ordertime">订单时间:</span><input id="ordertime_inp" type="text" readonly></div>
+            <div class="content-1"><span id="stime">入场时间:</span><input id="stime_inp" type="text" readonly></div>
+            <div class="content-1"><span id="paymoney">应收金额:</span><input id="paymoney_inp" type="text" readonly></div>
+            <div class="content-1"><span id="etime">预计离场时间:</span><input id="etime_inp" type="text" readonly></div>
+            <div class="content-1"><span id="dkmoney">抵扣金额:</span><input id="dkmoney_inp" type="text" readonly></div>
+            <div class="content-1"><span id="parkname">停车场名称:</span><input id="parkname_inp" type="text" readonly></div>
+            <div class="content-1"><span id="yhjmoney">优惠券金额:</span><input id="yhjmoney_inp" type="text" readonly></div>
+            <div class="content-1"><span id="">服务类型:</span><input type="text" readonly value="临停"></div>
+            <div class="content-1"><span id="shmoney">实收金额:</span><input id="shmoney_inp" type="text" readonly></div>
+            <div class="content-1"><span id="tbmoney">投币金额:</span><input id="tbmoney_inp" type="text" readonly></div>
+            <div class="content-1"><span id="bz">备注:</span><input id="bz_inp" type="text" readonly></div>
+            <div class="content-1"><span id="zlmoney">欠费金额:</span><input id="zlmoney_inp" type="text" readonly></div>
+            </br>
+            <div class="content-1 content-2"><span id="yhkmoney">应该还款金额:</span><input id="yhkmoney_inp" type="text" readonly></div>
+        </div>
+        <p>操作：</p>
+        <div class="checked">
+            <input style="width: 20px;" type="checkbox"  name="inp" value="inp" id="inp"><label for="inp">完成兑换</label>
+            <button class="send-btn" id="saveBtn">保存</button>
+        </div>
+    </div>
+</block>
+<block name="script">
+<scriot>
+    <script>
+        var getQueryString = function(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) {
+                return decodeURI(r[2]);
+            } else {
+                return null;
+            }
+        };
+        var name = getQueryString("name");
+        var id = getQueryString('id');
+        $(".content-2").hide();
+        $.ajax({
+            type:'POST',
+            url:"/index.php/Admin/Order/detailsMsg",
+            data:{
+                id:id,
+                name:name
+            },
+            success:function(data){
+                if(data[0].state == 2){
+                      $("#inp").attr("checked","checked")
+                }
+                $("#orderno_inp").val(data[0].orderno);
+                $("#carno_inp").val(data[0].carno);
+                $("#ordertime_inp").val(data[0].rowtime);
+                $("#stime_inp").val(data[0].entrancetime);
+                $("#paymoney_inp").val(data[0].totalmoney);
+                $("#etime_inp").val(data[0].exittime);
+                $("#dkmoney_inp").val(data[0].dedumoney);
+                $("#parkname_inp").val(data[0].parkname);
+                $("#yhjmoney_inp").val(data[0].couponmoney);
+                $("#shmoney_inp").val(data[0].paymoney);
+                $("#tbmoney_inp").val(data[0].paymoney);
+                $("#bz_inp").val(data[0].description);
+                if(name == 'qf'){
+                    $("#zlmoney_inp").val(data[0].overduemoney);
+                    $(".content-2").show();
+                    $("#yhkmoney_inp").val(data[0].overduemoney)
+                }
+                else{
+                    $("#zlmoney").html("找零金额");
+                    $("#zlmoney_inp").val(data[0].refundmoney)
+                }
+            }
+        });
+        $("#saveBtn").on("click",function(){
+            var state = '';
+            if($("#inp").is(":checked")){
+                state = 2;
+            }else{
+                state = 0;
+            }
+            $.ajax({
+                type:"POST",
+                data:{
+                    state:state,
+                    id:id,
+                    name:name
+                },
+                url:"./detailsState"
+            })
+        });
+    </script>
+</scriot>
+</block>

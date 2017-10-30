@@ -1,0 +1,66 @@
+<html>
+<body>
+
+<div id="biankuang" data-orient="center">
+    <img name="myImage" alt="pic"/>
+</div>
+
+<p>
+    <input type="button" value="放大图片" onclick="zoomIn()">
+    <input type="button" value="缩小图片" onclick="zoomOut()">
+    <input type="button" value="重置图片" onclick="resetImage()">
+<script>
+    var zoomLevel = 0;
+    var currentWidth = 0;
+    var currentHeight = 0;
+    var originalWidth = 0;
+    var originalHeight = 0;
+    function initial(){
+        currentWidth = document.myImage.width;
+        currentHeight = document.myImage.height;
+        originalWidth = currentWidth;
+        originalHeight = currentHeight;
+        update();
+    }
+    function zoomIn(){
+        document.myImage.width = currentWidth*1.2;
+        document.myImage.height = currentHeight*1.2;
+        zoomLevel = zoomLevel + 1;
+        update();
+    }
+    function zoomOut(){
+        document.myImage.width = currentWidth/1.2;
+        document.myImage.height = currentHeight/1.2;
+        zoomLevel = zoomLevel - 1;
+        update();
+    }
+    function resetImage(){
+        document.myImage.width = originalWidth;
+        document.myImage.height = originalHeight;
+        zoomLevel = 0;
+        update();
+    }
+    function update(){
+        currentWidth = document.myImage.width;
+        currentHeight = document.myImage.height;
+    }
+
+    function GetQueryString(name)
+    {
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = decodeURIComponent(window.location.search).substr(1).match(reg);
+        if(r!=null)return  unescape(r[2]); return null;
+    }
+
+    window.onload=function () {
+        var url = GetQueryString("url");
+        //url = decodeURIComponent("https%3A%2F%2Fss1.bdstatic.com%2F70cFuXSh_Q1YnxGkpoWK1HF6hhy%2Fit%2Fu%3D2438757233%2C2961043306%26fm%3D116%26gp%3D0.jpg");
+        document.getElementsByName("myImage")[0].src = url;
+        window.setTimeout(function () {
+            initial();
+        },100);
+
+    }
+</script>
+</body>
+</html>

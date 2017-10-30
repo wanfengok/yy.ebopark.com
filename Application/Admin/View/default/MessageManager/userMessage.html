@@ -1,0 +1,264 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+
+    </style>
+</block>
+<block name="body">
+    <!-- 标题栏 -->
+    <div class="main-title">
+        <h2>用户消息&nbsp;&nbsp;&nbsp;</h2>
+    </div>
+    <div class="portlet box gray" style="padding-left:10px;">
+        <div class="portlet-body">
+            <div class="content-padded">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th style="min-width:60px;">序号</th>
+                        <th>消息标题</th>
+                        <th style="min-width:140px;">触发条件</th>
+                        <th>跳转动作</th>
+                        <th style="min-width:80px;">操作人</th>
+                        <th>操作时间</th>
+                        <th>生效时间</th>
+                        <th style="min-width:80px;">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody">
+                    </tbody>
+                </table>
+                <div id="page" class="m-pagination"></div>
+            </div>
+
+        </div>
+
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <link rel="stylesheet" href="__PUBLIC__/js/page/jquery.pagination.css"/>
+    <script src="__PUBLIC__/js/page/jquery.pagination-1.2.7.js"></script>
+    <script src="__PUBLIC__/js/page/page.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            query();
+        });
+        //拉取分页数据
+        function query() {
+
+            $("#page").page('destroy');
+            var ii = layer.msg('加载中');
+            $("#page").page({
+                debug: false,
+                showInfo: true,
+                showJump: true,
+                showPageSizes: false,
+                remote: {
+                    url: "/index.php/Admin/MessageManager/userMessageQuery",
+                    params: {
+
+                    },
+                    success: function (data) {
+
+                        if (data.state != 0) {
+                            layer.close(ii);
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        $("#tbody").empty();
+                        $.each(data.data, function (index, item) {
+                            $("#tbody").append("<tr class='tr'>" +
+                                    "<td>"+(index+1)+"</td>" +
+                                    "<td class='message_title'>" +item.title+ "</td>" +
+                                    "<td class='condition'>" + getTriggerTypeName(item.triggertype) + "</td>" +
+                                    "<td class='target' style='max-width:240px;overflow:hidden;'>" + getJumpName(item) + "</td>" +
+                                    "<td class='manager'>" + item.operator + "</td>" +
+                                    "<td class='time'>" + item.operatetime + "</td>" +
+                                    "<td class='time'>" + item.rowtime + "</td>" +
+                                    "<td class='modify'><a href='"+getTarget(item.id)+"' target='_self'>修改</a></td>" +
+                                    " </tr>");
+                        });
+                        layer.close(ii);
+
+                    }
+                }
+            });
+        }
+        function getTarget(id){
+            var target =  './userMessageDetail?id='+id;
+            return target;
+        }
+        function getTriggerTypeName(triggertype){
+            var triggertype = parseInt(triggertype);
+            var triggertypeName;
+            switch (triggertype){
+                case 103:
+                    triggertypeName = '车辆入场未开启快速出场服务的用户';
+                    break;
+
+                case 105:
+
+                    triggertypeName = '车辆入场已经开启快速出场服务的用户且余额充足的用户';
+
+                    break;
+
+
+                case 106:
+
+                    triggertypeName = '车辆出场未勾选快速出场服务';
+
+                    break;
+
+
+                case 107:
+
+                    triggertypeName = '车辆出场成功收费';
+
+                    break;
+
+                case 108:
+
+                    triggertypeName = '车辆出场成功小于余额阀值';
+
+                    break;
+
+                case 109:
+
+                    triggertypeName = '车辆出场停车费高于自动缴费最大限额';
+
+                    break;
+
+                case 110:
+
+                    triggertypeName = '车辆出场未产生费用';
+
+                    break;
+
+
+                case 201:
+
+                    triggertypeName = '临停缴费成功';
+
+                    break;
+
+                case 202:
+
+                    triggertypeName = '月租缴费成功';
+
+                    break;
+
+                case 203:
+
+                    triggertypeName = '退费成功';
+
+                    break;
+
+                case 204:
+
+                    triggertypeName = '充值成功';
+
+                    break;
+
+                case 301:
+
+                    triggertypeName = '定时撤防失败';
+
+                    break;
+
+                case 401:
+
+                    triggertypeName = '月租到期提醒';
+
+                    break;
+
+
+                case 601:
+
+                    triggertypeName = '车牌找回提醒';
+
+                    break;
+
+                case 602:
+
+                    triggertypeName = '车牌找回成功';
+
+                    break;
+
+
+                case 603:
+
+                    triggertypeName = '车牌找回失败';
+
+                    break;
+
+
+                case 801:
+
+                    triggertypeName = '获得了新的优惠券';
+
+                    break;
+
+
+                default:
+
+                    triggertypeName = '未知';
+
+                    break;
+            }
+            return triggertypeName;
+        }
+         function getJumpName(item){
+
+             var jumptype = parseInt(item.jumptype);
+             var jumptypeContent='';
+             if(jumptype==1){
+                 jumptypeContent = item.jumpconfig;
+             }else {
+                 switch(parseInt(item.jumpconfig)){
+
+                     case 103:
+                         jumptypeContent = '自动支付';
+                         break;
+
+                     case 104:
+                         jumptypeContent = '我的余额';
+                         break;
+
+                     case  202:
+                         jumptypeContent = '交易记录';
+                         break;
+
+                     case 301:
+                         jumptypeContent = '车辆防盗';
+                         break;
+
+                     case 401:
+                         jumptypeContent = '月租服务';
+                         break;
+
+                     case 601:
+                         jumptypeContent = '车牌列表';
+                         break;
+
+                     case 603:
+                         jumptypeContent = '找回车牌';
+                         break;
+
+
+                     case 801:
+                         jumptypeContent = '我的优惠券';
+                         break;
+
+                     default:
+                         jumptypeContent = '无跳转';
+                         break;
+
+
+                 }
+
+             }
+            return jumptypeContent;
+         }
+    </script>
+</block>

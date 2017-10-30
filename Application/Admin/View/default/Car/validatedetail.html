@@ -1,0 +1,308 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style rel="stylesheet">
+        .tr1{
+            padding-left: 4px;
+            height: 50px;
+        }
+        .tr1 td{
+            padding: 4px;;
+            height: 40px;
+            text-align: right;
+            width: 120px;
+        }
+        .tr1 td input{
+            width: 140px;
+        }
+        select{
+            width: 140px;
+        }
+        .tr2{
+            padding-left: 4px;
+            height: 50px;
+        }
+        .tr2 td{
+            padding: 4px;;
+            border: solid 1px #797979;
+            height: 60px;
+            text-align: center;
+        }
+        .line{
+            height: 1px;
+            width: 100%;
+            background: darkgray;
+            margin-bottom: 15px
+        }
+    </style>
+</block>
+<block name="body">
+<form>
+    <div style="width: 100%;margin-left: 20px">
+        <div class="main-title">
+            <h3>行驶证详情&nbsp;&nbsp;&nbsp;</h3>
+            <div class="line"></div>
+        </div>
+        <table cellpadding="4" cellspacing="2" style="width:auto;margin-bottom: 15px" border="0">
+            <tr>
+                <td style="width: 60px">车牌号：</td>
+                <td><input id="carno1" type="text" style="width: 200px"></td>
+            </tr>
+            <tr>
+                <td>图片：</td>
+                <td style="width: 600px;">
+                    <div style="width: 200px;float: left;height:120px">
+                        <img id="img" style="width: 100% ; height: 100%">
+
+                    </div>
+                    <div style="width: 100px;float: left;height:120px;line-height: 120px;vertical-align: middle;margin-left: 20px">
+                        <a id="imglink" href="#" target="_blank">查看</a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div style="width: 100px;float: left;height:40px;line-height: 40px">
+                        <input id="passbtn" type="button" class="btn  select_btn" value="通过" onclick="pass(1,'')"/>
+                    </div>
+                    <div style="width: 280px;float: left;height:40px;line-height: 40px;vertical-align: middle;margin-left: 20px">
+                        <select id="reason" style="width: 280px">
+                            <option>请选择不通过原因</option>
+                            <option>您上传的行驶证图片不清晰，请重新提交</option>
+                            <option>您上传的的不是行驶证图片，请重新提交</option>
+                            <option>您提交的行驶证信息与车辆信息不一致，请重新提交</option>
+                        </select>
+                    </div>
+                    <div style="width: 100px;float: left;height:40px;line-height: 40px;vertical-align: middle;margin-left: 20px">
+                        <input id="unpassbtn" type="button" class="btn  select_btn" value="不通过" onclick="unpass()"/>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div class="main-title">
+            <h3>车主信息详情&nbsp;&nbsp;&nbsp;</h3>
+            <div class="line"></div>
+        </div>
+        <table cellpadding="4" cellspacing="2" style="width:auto;margin-bottom: 15px" border="0">
+            <tr class="tr1">
+                <td>车牌号：</td>
+                <td><input id="carno" type="text" disabled="disabled"></td>
+                <td>车主姓名：</td>
+                <td><input id="username" type="text"></td>
+                <td>车价值：</td>
+                <td>
+                    <select id="rangeofvalue">
+                        <option value="0" selected="selected">10万以下</option>
+                        <option value="1">10万-30万</option>
+                        <option value="2">30万-80万</option>
+                        <option value="3">80万以上</option>
+                    </select>
+                </td>
+            </tr>
+            <tr class="tr1">
+                <td>品牌车系：</td>
+                <td>
+                    <input id="brand" type="text">
+                    <!--<input type="button" onclick="bindBrand()" value="开始"/>
+                    <input type="button" onclick="p()"/>-->
+                    <!--<select id="b1" onchange="bindVehicles()"></select>
+                    <select id="brand"></select>-->
+                </td>
+                <td>车架号码：</td>
+                <td><input id="frameno" type="text"></td>
+                <td>注册日期：</td>
+                <td><input id="regtime" type="text"></td>
+            </tr>
+            <tr class="tr1">
+                <td>发动机号：</td>
+                <td>
+                    <input id="enginenumber" type="text" maxlength="100">
+                </td>
+                <td>身份证号：</td>
+                <td><input id="idcard" type="text" maxlength="18"></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="6" style="text-align: right">
+                    <input id="savebtn" type="button" class="btn  select_btn" value="保存" onclick="save()"/>
+                    <input type="button" class="btn  select_btn" value="返回" onclick="goto()"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+</block>
+<block name="script">
+    <link rel="stylesheet" href="__MODULE_STATIC__/jedate/skin/jedate.css"/>
+    <script type="text/javascript" src="__MODULE_STATIC__/jedate/jedate.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script type="text/javascript">
+        var bbdata=new Array();
+        $(function(){
+            query();
+            jeDate({
+                dateCell: "#regtime",
+                isinitVal: false,
+                isTime: false
+            });
+        });
+
+        function GetQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = decodeURIComponent(window.location.search).substr(1).match(reg);
+            if (r != null)return unescape(r[2]);
+            return null;
+        }
+
+        function goto(){
+            location.href='validate?p='+GetQueryString("p");
+        }
+
+        function bindVehicles(name){
+            $.ajax({
+                type: "Get",
+                url: "http://item.tuhu.cn/Car/SelOneBrand?Brand="+encodeURIComponent(name)+"&callback=__GetCarVehicles_",
+                dataType:"jsonp",
+                jsonpCallback:"__GetCarVehicles_",
+                success: function (data) {
+                    var str="";
+                    for(var i=0;i<data.OneBrand.length;i++) {
+                        var item=data.OneBrand[i];
+                        str=str+","+item.Vehicle;
+                        //$("<option>"+item.Vehicle+"</option>").appendTo($("#brand"));
+                    }
+                    $("#ps").text($("#ps").text()+";"+name+":"+str);
+                }
+            });
+        }
+
+        function bindBrand(){
+            var array=new Array("A","B","C","D","E","F","G","H","I","G","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z");
+            $.ajax({
+                type: "Get",
+                url: "http://item.tuhu.cn/Car/GetCarBrands2?callback=__GetCarBrands__&jsoncallback=?",
+                dataType:"jsonp",
+                jsonpCallback:"__GetCarBrands__",
+                success: function (data) {
+                    //$("#b1").empty();
+                    try {
+                        for (var i = 0; i < array.length; i++) {
+                            var items = data[array[i]];
+                            if(items==null)continue;
+                            for (var j = 0; j < items.length; j++) {
+                                var item = items[j];
+                                bindVehicles(item.Brand);
+                                //$("<option value='" + item.Brand + "'>" + item.Brand + "</option>").appendTo($("#b1"));
+                            }
+                        }
+                    } catch (e) {
+                    }
+                }
+            });
+        }
+
+        function query(){
+            var carno=GetQueryString("carno");
+            var data= "carno="+encodeURIComponent(carno);
+            $.ajax({
+                type: "POST",
+                url: "./queryvalidatedetail?ajax=1",
+                data: data,
+                success: function (data) {
+                    var _data = eval(data);
+                    if (_data.state==0) {
+                        var json=_data.data;
+                        $("#username").val(json.username);
+                        $("#carno").val(json.carno);
+                        $("#carno1").val(json.carno);
+                        $("#rangeofvalue").val(json.rangeofvalue);
+                        $("#brand").val(json.brand);
+                        $("#frameno").val(json.frameno);
+                        $("#regtime").val(json.regtime);
+                        if(json.img!="") {
+                            $("#imglink").attr("href","img?url="+ encodeURIComponent(json.img));
+                            $("#img").attr("src",json.img);
+                        }
+                        if(json.state==0){
+                            $("#passbtn").css("display","");
+                            $("#unpassbtn").css("display","");
+                            $("#reason").css("display","");
+                        }
+                        else{
+                            $("#passbtn").css("display","none");
+                            $("#unpassbtn").css("display","none");
+                            $("#reason").css("display","none");
+                        }
+                        if(json.state==2){
+                            $("#savebtn").css("display","none");
+                        }
+
+                        $("#idcard").val(json.idcard);
+                        $("#enginenumber").val(json.enginenumber);
+                    }
+                }
+            });
+        }
+
+        function save(){
+            var username=$("#username").val();
+            var carno=$("#carno").val();
+            var rangeofvalue=$("#rangeofvalue").val();
+            var brand=$("#brand").val();
+            var frameno=$("#frameno").val();
+            var regtime=$("#regtime").val();
+            var idcard=$("#idcard").val();
+            var enginenumber=$("#enginenumber").val();
+            if(regtime==""){
+                $("#regtime").focus();
+                alert("请选择注册日期！");
+                return;
+            }
+            var data = "username="+ encodeURIComponent(username)+"&carno="+encodeURIComponent(carno)+"&rangeofvalue="+encodeURIComponent(rangeofvalue)+"&brand="+encodeURIComponent(brand)+"&frameno="+encodeURIComponent(frameno)+"&regtime="+encodeURIComponent(regtime)+"&idcard="+encodeURIComponent(idcard)+"&enginenumber="+encodeURIComponent(enginenumber);
+            $.ajax({
+                type: "POST",
+                url: "./save?ajax=1",
+                data: data,
+                success: function (data) {
+                    var _data = eval(data);
+                    if (_data.state==0) {
+                        alert("修改成功！");
+                    }
+                    else{
+                        alert("修改失败！");
+                    }
+                }
+            });
+        }
+
+        function  pass(way,reason){
+            var carno=$("#carno").val();
+            var state=way;
+            var data = "carno="+encodeURIComponent(carno)+"&state="+state+"&reason="+encodeURIComponent(reason);
+            $.ajax({
+                type: "POST",
+                url: "./pass?ajax=1",
+                data: data,
+                success: function (data) {
+                    var _data = eval(data);
+                    if (_data.state==0) {
+                        alert("审核成功！");
+                        query();
+                    }
+                    else{
+                        alert("审核失败！");
+                    }
+                }
+            });
+        }
+
+        function unpass(){
+            var reasonstr=$("#reason").val();
+            if(reasonstr=="请选择不通过原因"){
+                alert("请选择不通过原因！");
+                return;
+            }
+            pass(2,reasonstr);
+        }
+    </script>
+</block>

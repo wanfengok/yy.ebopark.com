@@ -1,0 +1,84 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+        .operateBtn{
+            font-size:12px;
+            padding:0px 5px;
+            color:blue;
+
+        }
+        .operateBtn:hover{
+            cursor:pointer;
+        }
+
+
+    </style>
+</block>
+<block name="body">
+    <div class="main-title">
+        <h2>新增广告&nbsp;&nbsp;&nbsp;</h2>
+    </div>
+<form action="./add" method="post" onsubmit=" return formvalidate();">
+    <div id="sample_2_wrapper" class="dataTables_wrapper form-inline" role="grid" style="padding-left:10px;">
+        <p>
+            <label for="source">广告来源:</label>
+            <select id="source" name="source">
+
+                <option value="3">banner</option>
+            </select>
+        </p>
+        <p>
+            <label for="advName">广告名称:</label>
+            <input id="advName" name="advName" maxlength="40"/>
+        </p>
+        <p>
+            <label for="advUrl">广告链接:</label>
+            <input id="advUrl" name="advUrl" maxlength="200"/>
+        </p>
+
+        <p><input type="submit" value="添加"/></p>
+    </div>
+</form>
+</block>
+<block name="script">
+    <link rel="stylesheet" href="__MODULE_STATIC__/jedate/skin/jedate.css"/>
+    <script type="text/javascript" src="__MODULE_STATIC__/jedate/jedate.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <link rel="stylesheet" href="__PUBLIC__/js/page/jquery.pagination.css"/>
+    <script src="__PUBLIC__/js/page/jquery.pagination-1.2.7.js"></script>
+    <script src="__PUBLIC__/js/page/page.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script type="text/javascript">
+
+        function formvalidate(){
+          var advName=$("#advName").val();
+          var advUrl=$("#advUrl").val();
+//          var startTime=$("#startTime").val();
+//          var endTime=$("#endTime").val();
+
+            if(advName==""||advUrl==""){
+                layer.alert("广告名称或链接不能为空!");
+                return false;
+            }
+//            if(startTime==""||endTime==""){
+//                layer.alert("开始时间或结束时间不能为空!");
+//                return false;
+//            }
+            return true;
+        }
+//        $(function(){
+//            jeDate({
+//                dateCell: "#startTime",
+//                isinitVal: true,
+//                isTime: true
+//            });
+//            jeDate({
+//                dateCell: "#endTime",
+//                isinitVal: true,
+//                isTime: true
+//            });
+//
+//        });
+
+    </script>
+</block>

@@ -1,0 +1,226 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+        .operateBtn{
+            font-size:12px;
+            padding:0px 5px;
+            color:blue;
+        }
+        .operateBtn:hover{
+            cursor:pointer;
+        }
+    </style>
+</block>
+<block name="body">
+    <div class="main-title">
+        <h2>系统消息&nbsp;&nbsp;&nbsp;</h2>
+    </div>
+    <div id="sample_2_wrapper" class="dataTables_wrapper form-inline" role="grid" style="padding-left:10px;">
+        <a href="/index.php/Admin/MessageManager/sysMessageAdd" target="_self"><input type="button" value="添加消息" class="btn  select_btn" style="width:90px;height:35px;padding:0px;margin-bottom:10px;"/></a>
+        <table class="table table-striped table-bordered table-hover dataTable" id="sample_2" aria-describedby="sample_2_info">
+
+            <thead>
+
+            <tr role="row">
+                <th style="min-width: 60px;">序号</th>
+                <th class="sorting" role="columnheader" tabindex="0" aria-controls="sample_2" rowspan="1"
+                    colspan="1"  style="width: 200px;">
+                    消息标题
+                </th>
+                <th class="hidden-480 sorting" role="columnheader" tabindex="0" aria-controls="sample_2" rowspan="1"
+                    colspan="1"  style="width: 200px;">发布范围
+                </th>
+                <th class="hidden-480 sorting" role="columnheader" tabindex="0" aria-controls="sample_2" rowspan="1"
+                    colspan="1"  style="width: 242px;">跳转动作
+                </th>
+                <th class="hidden-480 sorting" role="columnheader" tabindex="0" aria-controls="sample_2" rowspan="1"
+                    colspan="1"  style="width: 242px;">操作人
+                </th>
+                <th class="hidden-480 sorting" role="columnheader" tabindex="0" aria-controls="sample_2" rowspan="1"
+                    colspan="1"  style="width: 242px;">操作时间
+                </th>
+                <th class="hidden-480 sorting" role="columnheader" tabindex="0" aria-controls="sample_2" rowspan="1"
+                    colspan="1"  style="width: 242px;">生效时间
+                </th>
+                <th class="hidden-480 sorting" role="columnheader" tabindex="0" aria-controls="sample_2" rowspan="1"
+                    colspan="1"  style="width: 242px;">开始时间
+                </th>
+                <th class="hidden-480 sorting" role="columnheader" tabindex="0" aria-controls="sample_2" rowspan="1"
+                    colspan="1"  style="width: 242px;">结束时间
+                </th>
+
+                <th style="min-width:100px;text-align:center;">操作</th>
+            </tr>
+            </thead>
+            <tbody role="alert" aria-live="polite" aria-relevant="all" id="tbody">
+            </tbody>
+        </table>
+        <div id="page" class="m-pagination"></div>
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <link rel="stylesheet" href="__PUBLIC__/js/page/jquery.pagination.css"/>
+    <script src="__PUBLIC__/js/page/jquery.pagination-1.2.7.js"></script>
+    <script src="__PUBLIC__/js/page/page.js"></script>
+    <script type="text/javascript">
+        $(function(){
+
+            query();
+        });
+        function deleteMsg(id){
+            var ii=layer.msg('操作中……', {icon: 16});
+            $.getJSON('/index.php/Admin/MessageManager/deleteSysMsg?id='+id,function(data){
+                layer.close(ii);
+                if(data.state!=0){
+                    layer.alert(data.msg);
+                    return;
+                }
+                layer.alert("操作成功",load());
+                query();
+            });
+
+        }
+        function load(){
+            window.location.reload();
+        }
+        function initListener(){
+            $(".deleteBtn").click(function(){
+                var id=$(this).parents("tr").eq(0).attr("dataid");
+                layer.confirm("确认删除该条消息？",function(){
+                    deleteMsg(id);
+                });
+            });
+            $(".modifyBtn").click(function(){
+                var id=$(this).parents("tr").eq(0).attr("dataid");
+                window.location.href="/index.php/Admin/MessageManager/sysMessageDetail?id="+id;
+
+            });
+            $(".addToAdvList").click(function(){
+                var id=$(this).parents("tr").eq(0).attr("dataid");
+                var url='./addToAdvList?id='+id;
+                var ii=layer.msg("操作中……");
+                $.getJSON(url,function(data){
+                    layer.close(ii);
+                    if(data.state!=0){
+                        layer.alert(data.msg);
+                        return
+                    }
+                    load();
+
+                });
+
+            });
+        }
+        //拉取分页数据
+        function query() {
+
+            $("#page").page('destroy');
+            var ii = layer.msg('加载中');
+            $("#page").page({
+                debug: false,
+                showInfo: true,
+                showJump: true,
+                showPageSizes: false,
+                remote: {
+                    url: "/index.php/Admin/MessageManager/sysMessageQuery",
+                    params: {
+
+                    },
+                    success: function (data) {
+
+                        if (data.state != 0) {
+                            layer.close(ii);
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        $("#tbody").empty();
+                        $.each(data.data, function (index, item) {
+                            var  htmlStr='<tr index="'+(index+1)+'" id="list'+(index+1)+'" dataid="'+item.id+'">' +
+                                    '<td style="text-align:center;" >'+(index+1)+'</td>' +
+                                    '<td style="text-align:center;">'+(item.title==null?"":item.title)+'</td>' +
+                                    '<td style="text-align:center;">'+getLimitStr(item)+'</td>' +
+                                    '<td style="text-align:center;max-width:200px;overflow:hidden;">'+getJumpDesc(item.jumpconfig)+'</td>' +
+                                    '<td style="text-align:center;">'+item.operator+'</td>' +
+                                    '<td style="text-align:center;">'+item.operatetime+'</td>' +
+                                    '<td style="text-align:center;">'+(item.timingsendtime!=""&&item.timingsendtime!=null?item.timingsendtime.split(" ")[1]:"")+'</td>' +
+                                    '<td style="text-align:center;">'+item.starttime+'</td>' +
+                                    '<td style="text-align:center;">'+item.endtime+'</td>' +
+                                    '<td style="text-align:center;min-width:80px;"><span  class="operateBtn modifyBtn">修改</span><br/><span  class="operateBtn deleteBtn">删除</span><br/>'+getAdvHtmlStr(item.show)+'</td>' +
+                                    '</tr>';
+                            $("#tbody").append(htmlStr);
+                        });
+                        initListener();
+                        layer.close(ii);
+
+                    }
+                }
+            });
+        }
+        //返回添加广告的html
+        function getAdvHtmlStr(show){
+            if(show=='1'){
+                return ' <span class="operateBtn addToAdvList">设为广告</span>';
+            }
+            if(show=='0'){
+                return ' <span class="operateBtn" style="color:gray;">已设为广告</span>';
+            }
+            return '';
+
+        }
+        function getTriggerDesc(type){
+            var triggerDesc="无";
+            switch(type){
+                case "99001":triggerDesc="定时发送";break;
+                case "103":triggerDesc="车辆入场未开启快速出场服务的用户";break;
+                case "105":triggerDesc="车辆入场已经开启快速出场服务的用户且余额充足的用户";break;
+                case "106":triggerDesc="车辆出场未勾选快速出场服务";break;
+                case "107":triggerDesc="车辆出场成功收费";break;
+                case "108":triggerDesc="车辆出场成功小于余额阀值";break;
+                case "109":triggerDesc="车辆出场停车费高于自动缴费最大限额";break;
+                case "110":triggerDesc="车辆出场未产生费用";break;
+                case "201":triggerDesc="临停缴费成功";break;
+                case "202":triggerDesc="月租缴费成功";break;
+                case "203":triggerDesc="退费成功";break;
+                case "204":triggerDesc="充值成功";break;
+                case "301":triggerDesc="定时撤防失败";break;
+                case "401":triggerDesc="月租到期提醒";break;
+                case "601":triggerDesc="车牌找回提醒";break;
+                case "602":triggerDesc="车牌找回成功";break;
+                case "603":triggerDesc="车牌找回失败";break;
+                case "801":triggerDesc="获得了新的优惠券";break;
+            }
+            return triggerDesc;
+        }
+        /**
+         * 获取指定范围
+         */
+        function getLimitStr(item){
+            if((item.limitcity==null||item.limitcity=="")&&(item.limitpark==null||item.limitpark=="")&&(item.limitmobile==null||item.limitmobile=="")){
+
+                return "全部";
+            }
+            return "指定";
+
+        }
+        function getJumpDesc(type){
+            var triggerDesc="无跳转";
+            if (type==null)return triggerDesc;
+            switch(type){
+                case "-1":triggerDesc="无跳转";break;
+                case "103":triggerDesc="自动支付";break;
+                case "108":triggerDesc="我的余额";break;
+                case "203":triggerDesc="退费记录";break;
+                case "204":triggerDesc="交易记录";break;
+                case "601":triggerDesc="车辆管理";break;
+                case "602":triggerDesc="车牌找回成功";break;
+                case "603":triggerDesc="找回车牌";break;
+                case "401":triggerDesc="月租服务";break;
+                case "301":triggerDesc="车辆防盗";break;
+                case "801":triggerDesc="我的优惠券";break;
+                default:triggerDesc=type;break;
+            }
+            return triggerDesc;
+        }
+    </script>
+</block>

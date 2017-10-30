@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>地图标记</title>
+</head>
+<body style="width: 550px;height: 400px">
+<div style="width: 550px;height: 30px;line-height: 20px; overflow: hidden;margin:0;">
+    <input type="button" value="确定" onclick="ok()" class="btn select_btn" style="height: 30px;"/>
+    <input type="button" value="取消" onclick=" $('.close').click();" class="btn select_btn" style="height: 30px"/>
+</div>
+<div id="mapContainer" style="width: 550px;height: 380px;overflow: hidden;margin:0;"></div>
+</body>
+</html>
+<script type="text/javascript">
+    var cur = null;
+    var _addr=null;
+    var map = new BMap.Map("mapContainer");
+    var geoc = new BMap.Geocoder();
+    map.enableScrollWheelZoom(); //可滑动
+    map.addControl(new BMap.NavigationControl()); //导航条
+    var point = new BMap.Point(104.067923, 30.679943); //成都市(116.404, 39.915);
+    map.centerAndZoom(point, 13);
+
+    if ($("#address").val() != "") {
+        geoc.getPoint($("#address").val(), function (point) {
+            if (point) {
+                map.centerAndZoom(point, 13);
+                map.addOverlay(new BMap.Marker(point));
+                cur = point;
+            } else {
+                alert("您选择地址没有解析到结果!");
+
+            }
+        }, "成都市");
+    }
+
+
+    //监听点击地图事件
+    map.addEventListener("click", function (e) {
+        cur= e.point;
+        getCircle(cur);
+    });
+
+
+    //创建标注点函数
+    function getCircle(point) {
+        map.clearOverlays();
+        marker = new BMap.Marker(point);
+        map.addOverlay(marker);
+    }
+
+    function ok(){
+        if(cur==null){
+            alert("请先标注点！");
+            return;
+        }
+        mark(cur);
+        $('.close').click();
+    }
+</script>

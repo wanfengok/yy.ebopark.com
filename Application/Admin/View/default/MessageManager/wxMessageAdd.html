@@ -1,0 +1,481 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+        .designatedUserContainer{
+            padding:10px;
+            border:1px #e5e5e5 solid;
+            margin-top:10px;
+        }
+        .du_title{
+            font-weight:bold;
+        }
+        .du_area_item,.du_city_item{
+            padding-left:10px;
+        }
+        .del{
+            display:inline-block;
+            width:12px;
+            height:12px;
+            background: url("__IMG__/icon-close.png") no-repeat;
+            background-position:0px 3px;
+        }
+        .del:hover{
+            cursor:pointer;
+            background-position:0px -9px;
+        }
+        .select_park_title{
+            background:#e5e5e5;font-size:14px;padding-left:10px;height:30px;line-height:30px;
+        }
+        .du_area_item label{
+            padding-left:5px;
+        }
+    </style>
+</block>
+<block name="body">
+    <!-- 标题栏 -->
+    <div class="main-title">
+        <h2>添加微信消息&nbsp;&nbsp;&nbsp;</h2>
+    </div>
+    <div class="portlet box gray"  style="padding-left:10px;">
+        <div class="portlet-body">
+            <form action="/index.php/Admin/MessageManager/submitWeixinMsg" class="form-horizontal"  enctype="multipart/form-data" method="post" onsubmit="return formValidate();">
+                <input type="hidden" name="areaListStr" id="areaListStr"/>
+                <input type="hidden" name="parkLotListStr" id="parkLotListStr"/>
+
+
+                <div class="control-group" style="margin-top:10px;">
+
+                    <label class="control-label" style="float:left;margin-right:10px;">触发条件</label>
+
+                    <div class="controls">
+                        <select   class="large m-wrap" tabindex="1" id="wxMsgTpl" name="wxMsgTpl">
+                            <option value="-1">选择消息模板</option>
+
+                            <option value="901">登录成功提醒</option>
+                            <option value="402">月租会员过期提醒</option>
+                            <option value="103">入场通知</option>
+                            <option value="106">车辆出场提醒</option>
+                            <option value="801">优惠返还通知</option>
+                            <option value="601">车牌找回提醒</option>
+                            <option value="602">车牌找回成功</option>
+                            <option value="603"> 车牌找回失败</option>
+                            <option value="1001">活动上门洗车消息</option>
+                            <option value="1002">活动门店洗车消息 </option>
+                            <option value="1101">商户订单通知 </option>
+                        </select>
+
+                    </div>
+
+                </div>
+                <div class="control-group" style="margin-top:10px;width: 100%">
+
+                    <label class="control-label" style="float:left">消息标题</label>
+                    <div class="controls" style="float:left;margin-left:10px;">
+                        <input id="title" name="title" type="text" placeholder="" class="m-wrap large" >
+                    </div>
+                    <div  style="float:left;margin-left:10px;line-height: 35px">
+                        <span style="color:red">(注：标题请如实填写，如果填写的消息类型和用户消息一致，请保证标题一致)</span>
+                    </div>
+                </div>
+                <div style="clear:both;"></div>
+                <div class="control-group" style="margin-top:10px;">
+
+                    <label class="control-label" style="float:left">消息备注</label>
+                    <div class="controls" style="float:left;margin-left:10px;">
+                        <input id="remark" name="remark" type="text" placeholder="" class="m-wrap large">
+                    </div>
+
+                </div>
+                <div style="clear:both;"></div>
+                <div class="control-group" style="margin-top:10px;">
+
+                    <label class="control-label" style="float:left">头部内容</label>
+                    <div class="controls" style="float:left;margin-left:10px;">
+                        <input id="headerContent" name="headerContent" type="text" placeholder="" class="m-wrap large">
+                    </div>
+
+
+                </div>
+                <div style="clear:both;"></div>
+                <div class="control-group" style="margin-top:10px;">
+
+                    <label class="control-label" style="float:left;margin-right:10px;">尾巴内容:</label>
+
+                    <div class="controls">
+
+                        <textarea id="footerContent" class="large m-wrap" rows="3" name="footerContent" style="float:left;"></textarea>
+                        <div style="float:left;color:gray;padding-left:10px;max-width:400px;" id="placeHolderDesc"></div>
+                    </div>
+<div style="clear:both;"></div>
+                </div>
+
+                <div style="height:1px; background:#f3f3f3;width:100%;margin-top:10px;margin-bottom:10px;"></div>
+                <div class="control-group">
+
+                    <label class="control-label">目标用户</label>
+
+                    <div class="controls">
+
+                        <select class="small m-wrap" tabindex="1" id="customization" name="customization">
+
+                            <option value="0">全部用户</option>
+                            <option value="1">指定用户</option>
+
+                        </select>
+                        <div class="designatedUserContainer" style="display:none;">
+                            <div class="du_wrapperContainer">
+                                <span class="du_title">选择城市</span>
+                                <div class="du_area_c" style="margin-top:8px;">
+
+                                </div>
+                                <div style="height:1px; background:#f3f3f3;width:100%;margin-top:10px;margin-bottom:10px;"></div>
+                                <span class="du_title">选择项目(<a href="javascript:selectPark();" style="color:#114dad;">点击选取</a>)</span>
+                                <div class="selected_parklots">
+                                    <ul style="padding-left:0px;">
+
+                                    </ul>
+                                </div>
+                                <div style="height:1px; background:#f3f3f3;width:100%;margin-top:10px;margin-bottom:10px;"></div>
+                                <div>
+                                    <span class="du_title" style="font-size:13px;font-weight:bold;">导入手机号码包</span>
+                                    <p>
+                                        <input type="file" class="m-wrap large" name="file_stu" id="file_stu" style="float:left;">
+                                        <label class="help-inline" style="float:left;height:34px;line-height:34px;padding-left:10px;" for="file_stu">导入excel表</label>
+                                    </p>
+                                </div>
+                                <div style="clear:both;"></div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div style="height:1px; background:#f3f3f3;width:100%;margin-top:20px;margin-bottom:10px;"></div>
+
+
+                <div class="control-group">
+                    <div style="min-width:60px;float:left;margin-right:10px;" class="control-label">跳转动作</div>
+
+                    <label class="radio" style="float:left;">
+                        <input type="radio" name="redirectType" value="1" checked />
+                        打开链接
+                    </label>
+                    <input type="text" placeholder="" class="m-wrap large" style="margin-left:10px;" id="custom_url" name="custom_url">
+                    <span class="help-inline"></span>
+
+                    <div style="padding-left:70px;margin-top:10px;">
+                        <label class="radio" style="float:left;">
+                            <input type="radio" name="redirectType" value="2" />
+                            打开指定页面
+                        </label>
+
+                        <select class="large m-wrap" tabindex="1" id="fixedURL" name="fixedURL">
+                            <option value="-1">无跳转</option>
+                            <option value="1">自动支付</option>
+                            <option value="2">我的余额</option>
+                            <option value="3">交易记录</option>
+                            <option value="4">车辆管理</option>
+                            <option value="5">月租服务</option>
+                            <option value="6">我的优惠券</option>
+                            <option value="7">充值</option>
+                            <option value="8">临停缴费</option>
+                        </select>
+
+                    </div>
+                </div>
+                <div style="height:1px; background:#f3f3f3;width:100%;margin-top:10px;margin-bottom:10px;"></div>
+
+                <div class="control-group" style="margin-top:10px;">
+                    <label class="control-label" style="padding-right:20px;">活动时间</label>
+
+
+                    <input type="text" placeholder="" class="m-wrap medium" id="startTime" name="startTime">
+                    <span style="height:34px;line-height:34px;display:inline-block;">&nbsp;&nbsp;至&nbsp;&nbsp;</span>
+                    <input type="text" placeholder="" class="m-wrap medium" id="endTime" name="endTime">
+                    <span class="help-inline"></span>
+
+                </div>
+                <div class="control-group" style="margin-top:10px;">
+                    <label class="control-label" style="padding-right:20px;">重复推送</label>
+                    <span style="height:34px;line-height:34px;display:inline-block;">每&nbsp;&nbsp;</span><input type="text" style=""
+                                                                                                                class="m-wrap small" id="intervalTime" name="intervalTime"/><span
+                        style="height:34px;line-height:34px;display:inline-block;">&nbsp;&nbsp;天推送一次</span> <span class="help-inline">（空或0表示不重复推送）</span>
+
+                </div>
+                <div style="height:1px; background:#f3f3f3;width:100%;margin-top:10px;margin-bottom:10px;"></div>
+
+                <div class="form-actions" style="padding-left:0px;text-align:center;background:white;border:0px;">
+                    <button type="submit" class="btn blue"><i class="icon-ok"></i> 提交</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+    <div id="selectParkContainer" style="display:none;">
+        <div  class="selectParkContainer">
+
+        </div>
+    </div>
+
+
+
+</block>
+<block name="script">
+    <link rel="stylesheet" href="__PUBLIC__/css/style-metro.css"/>
+    <link rel="stylesheet" href="__MODULE_STATIC__/jedate/skin/jedate.css"/>
+    <script type="text/javascript" src="__MODULE_STATIC__/jedate/jedate.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script type="text/javascript">
+        var city_parklot={$city_parklot};
+        var imgSrc='__IMG__';
+        var checkList=new Array() ;
+        var checkListOfParkname=new Array();
+        $(function () {
+            initPage();
+
+        });
+        function initPage(){
+            initParkList();
+            initAreaList();
+            initDateTimePicker();
+            initListener();
+        }
+        function initAreaList(){
+            var citys=city_parklot.citys;
+            var length=citys.length;
+            for(var index=0;index<length;index++){
+                var selected=0;
+                $(".du_area_c").append('<span class="du_city_item"> <input type="checkbox" name="limitCity" city="'+citys[index]+'" id="'+citys[index]+'" '+(selected==1?"checked=\"checked\"":"")+'/><label for="'+citys[index]+'" style="padding-left:6px;">'+citys[index]+'</label></span>');
+            }
+
+        }
+        function initParkList(){
+            var htmlStr='';
+            for( value in city_parklot.parklot){
+                var parklotObj=  city_parklot.parklot[value].data;
+                htmlStr+='<div class="park_p">'+
+                        '<p class="select_park_title" val="0"><img src="'+imgSrc+'/check_box_unselect.png" style="height:18px;width:auto;padding-bottom:4px;"/><label for="'+value+'" style="padding-left:10px;">'+value+'</label></p>'+
+                        '<div>';
+                htmlStr+=getParklotListHtmlStr(parklotObj);
+            }
+            $(".selectParkContainer").empty();
+            $(".selectParkContainer").append(htmlStr);
+        }
+        function initListener(){
+
+            $("#triggerType").change(function(){
+                var triggertype=$(this).val();
+                if (triggertype =='99001'){
+                    $("#timingSendTime").parent().show();
+                }else{
+                    $("#timingSendTime").parent().hide();
+                }
+            });
+            $("#customization").change(function () {
+                if ($("#customization").val()=='0'){
+                    $(".designatedUserContainer").hide();
+                }else{
+                    $(".designatedUserContainer").show();
+                }
+            });
+            $("#wxMsgTpl").change(function(){
+                var triggerType=$(this).val();
+                var placeHolder=getplaceHolderTips(triggerType);
+                $("#placeHolderDesc").text(placeHolder);
+
+            });
+
+        }
+
+        function initDateTimePicker() {
+
+            jeDate({
+                dateCell: "#startTime",
+                isinitVal: true,
+                isTime: true
+            });
+            jeDate({
+                dateCell: "#endTime",
+                isinitVal: true,
+                isTime: true
+            });
+        }
+
+
+        function getParklotListHtmlStr(parklotObj){
+            var listStr='';
+            for(var index=0;index<parklotObj.length;index++){
+                var dataObj=parklotObj[index];
+                listStr+='<span class="du_area_item" parkcode="'+dataObj.parkcode+'" parkname="'+dataObj.parkname+'" val="0"> <img src="'+imgSrc+'/check_box_unselect.png" style="height:18px;width:auto;padding-bottom:4px;"/><label>'+dataObj.parkname+'</label></span>';
+            }
+            listStr+='</div></div>';
+            return listStr;
+        }
+        function initSelectListener(){
+            $(".select_park_title").on("click",function(){
+                onClickCheckBox(this);
+                var checked=$(this).attr("val");
+                var du_area_item_class= $(this).parents(".park_p").eq(0).find(".du_area_item");
+                    du_area_item_class.attr("val",checked);
+                $(du_area_item_class).find("img").attr("src",checked=='0'?imgSrc+'/check_box_unselect.png':imgSrc+'/check_box_select.png');
+                updateSelectParkLot();
+            });
+            $(".du_area_item").on("click",function(){
+                onClickCheckBox(this);
+                updateSelectParkLot();
+            });
+        }
+        function onClickCheckBox(_obj){
+            var checked=$(_obj).attr("val");
+            checked=checked=='0'?'1':0;
+            $(_obj).attr("val",checked);
+            $(_obj).find("img").attr("src",checked=='0'?imgSrc+'/check_box_unselect.png':imgSrc+'/check_box_select.png');
+
+        }
+        function selectPark(){
+            (new $.zui.ModalTrigger({custom: $("#selectParkContainer").find(".selectParkContainer").eq(0).html()})).show();
+            initSelectListener();
+            initSelectStatus();
+
+        }
+         //更新选中状态
+        function initSelectStatus(){
+            var duAreaItemlist= $("#triggerModal").find(".du_area_item");
+            if(checkList.length==0){
+                return;
+            }
+            $.each(duAreaItemlist,function(index,item){
+                var length=checkList.length;
+                var parkcode=$(item).attr("parkcode");
+                var checked=0;
+               for(var index=0;index<length;index++){
+                   var parkcode1=checkList[index];
+                   if(parkcode==parkcode1){
+                       checked=1;
+                       break;
+                   }
+               }
+                $(item).attr("val",checked);
+                $(item).find("img").attr("src",checked=='0'?imgSrc+'/check_box_unselect.png':imgSrc+'/check_box_select.png');
+
+            });
+        }
+        /**
+         * 更新选中的停车场
+         */
+        function updateSelectParkLot(){
+           var duAreaItemlist= $("#triggerModal").find(".du_area_item");
+            checkList=new Array();
+            checkListOfParkname=new Array();
+            $.each(duAreaItemlist,function(index,item){
+                if($(item).attr("val")=='1'){
+                    checkList.push($(item).attr("parkcode"));
+                    checkListOfParkname.push($(item).attr("parkname"));
+                }
+
+            });
+            updateSelectParkname();
+        }
+        function updateSelectParkname(){
+                $(".selected_parklots ul").empty();
+                 var length=checkListOfParkname.length;
+                for(var index=0;index<length;index++){
+                    $(".selected_parklots ul").append("<span style='padding-left:10px;'>"+checkListOfParkname[index]+"</span>");
+                }
+
+        }
+
+        function getParkNameByParkCode(parkcode){
+            for( value in city_parklot.parklot){
+                var parklotObj=  city_parklot.parklot[value].data;
+                for(var index=0;index<parklotObj.length;index++){
+                    var dataObj=parklotObj[index];
+                    if(dataObj.parkcode==parkcode){
+                        return  dataObj.parkname;
+                    }
+                }
+
+            }
+            return parkcode;
+        }
+        function formValidate(){
+
+            //消息模板
+            var tplCode=$("#wxMsgTpl").val();
+            //消息备注
+            var remark=$("#remark").val();
+            //头部内容
+            var headerContent=$("#headerContent").val();
+            //尾部内容
+            var footerContent=$("#footerContent").val();
+            //限定用户类型
+            var customization=$("#customization").val();//all someone
+            var areaListStr=getSelectedCitys();
+            var ParkLotListStr= getSelectParkLots();
+            $("#areaListStr").val(areaListStr);
+            $("#parkLotListStr").val(ParkLotListStr);
+            //跳转类型
+            var redirectType=$('input[name="redirectType"]:checked').val();//0:打开链接；1:打开指定页面
+            //自定义跳转
+            var custom_url=$("#custom_url").val();
+            //固定跳转
+            var fixedURL=$("#fixedURL").val();
+            //生效时间
+            var startTime=$("#startTime").val();
+            //失效时间
+            var endTime=$("#endTime").val();
+            //间隔发送时间
+            if($.trim(remark)=="默认消息"){
+                layer.alert("备注不能为：默认消息");
+                return false;
+            }
+            if(tplCode=="-1"){
+                layer.alert("请选择消息模板");
+                return false;
+            }
+            if($.trim(headerContent)==""){
+                layer.alert("头部内容不能为空");
+                return false;
+            }
+            if($.trim(footerContent)==""){
+                layer.alert("尾部内容不能为空");
+                return false;
+            }
+            return true;
+
+
+        }
+        function getplaceHolderTips(type){
+            var tips="";
+            switch(type){
+                case "402":tips="[时间]、[月租到期日期]、[停车场名称]、[车牌号]";break;
+                case "901":tips="[时间]、[车牌号]、[用户名]";break;
+                case "103":tips="[车牌号]、[停车场名称]、[入场时间]、[用户名]";break;
+                case "106":tips="[车牌号]、[停车场名称]、[时间]、[出场时间]、[入场时间]、[应收]、[实收]、[优惠券金额]、[抵扣金额]、[用户名]、[剩余金额]、[自动支付金额上限]";break;
+                case "801":tips="[优惠券活动名称]、[优惠券列表]、[时间]";break;
+                case "601":tips="[车牌号]、[时间]、[车牌找回失败原因]";break;
+                case "1001":
+                case "1101":
+                case "1002":tips="[描述]、[支付类型]、[当前日期]";break;
+            }
+            return tips;
+
+        }
+        //获取选中的城市
+        function getSelectedCitys(){
+            var listObj=$("input[name='limitCity']:checked");
+            var cityStr=new Array();
+            $.each(listObj,function(index,item){
+                cityStr.push($(this).attr("city"));
+            });
+            return cityStr.toString();
+        }
+        //获取选中的停车场
+        function getSelectParkLots(){
+            return checkList.toString();
+        }
+    </script>
+</block>

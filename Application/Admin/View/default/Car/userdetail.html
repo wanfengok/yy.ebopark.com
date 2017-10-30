@@ -1,0 +1,125 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style rel="stylesheet">
+        .tr1{
+            padding-left: 4px;
+            height: 50px;
+            color: white
+        }
+        .tr1 td{
+            background-color: #a1a1a1;
+            padding: 4px;;
+            border: solid 1px #797979;
+            height: 60px;
+            color: white;
+            text-align: center;
+        }
+        .tr2{
+            padding-left: 4px;
+            height: 50px;
+        }
+        .tr2 td{
+            padding: 4px;;
+            border: solid 1px #797979;
+            height: 60px;
+            text-align: center;
+        }
+        .line{
+            height: 1px;
+            width: 100%;
+            background: darkgray;
+            margin-bottom: 15px
+        }
+    </style>
+</block>
+<block name="body">
+<form>
+    <div style="width: 100%;margin-left: 20px">
+        <div class="main-title">
+            <h3>车牌信息&nbsp;&nbsp;&nbsp;</h3>
+            <div class="line"></div>
+        </div>
+        <table cellpadding="4" cellspacing="2" style="width:auto;margin-bottom: 15px" border="0">
+            <tr class="tr1">
+                <td width="120px">车牌号</td>
+                <td width="120px">车主姓名</td>
+                <td width="120px">品牌主系</td>
+                <td width="120px">车价值</td>
+                <td width="180px">车架号码</td>
+                <td width="140px">注册日期</td>
+                <td width="140px">行驶证照片</td>
+            </tr>
+            <tr class="tr2">
+                <td id="t1"></td>
+                <td id="t2"></td>
+                <td id="t3"></td>
+                <td id="t4"></td>
+                <td id="t5"></td>
+                <td id="t6"></td>
+                <td id="t7"></td>
+            </tr>
+        </table>
+        <div class="main-title">
+            <h3>车辆共享&nbsp;&nbsp;&nbsp;</h3>
+            <div class="line"></div>
+        </div>
+        <table cellpadding="4" cellspacing="2" style="width:auto;margin-bottom: 15px">
+            <tr>
+                <td>
+                    <textarea id="share" readonly="readonly" style="width:600px;height:70px"></textarea>
+                </td>
+            </tr>
+        </table>
+        <div class="main-title">
+            <h3>月租授权&nbsp;&nbsp;&nbsp;</h3>
+            <div class="line"></div>
+        </div>
+        <table cellpadding="4" cellspacing="2" style="width:auto;margin-bottom: 1px">
+            <tr>
+                <td>
+                    <textarea id="grant" readonly="readonly" style="width:600px;height:170px"></textarea>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function()
+        {
+            var json=eval({$json});
+            $("#t1").html(json.carno);
+            $("#t2").html(json.username);
+            $("#t3").html(json.brand);
+            var str="";
+            switch(json.rangeofvalue){
+                case "0":
+                    str="10万以下";
+                    break;
+                case "1":
+                    str="10万-30万";
+                    break;
+                case "2":
+                    str="30万-80万";
+                    break;
+                case "3":
+                    str="80万以上";
+                    break;
+                default:
+                    str=json.rangeofvalue;
+                    break;
+            }
+            $("#t4").html(str);
+            $("#t5").html(json.frameno);
+            $("#t6").html(json.regtime);
+            if(json.img!="") {
+                $("#t7").html("<a target='_blank' href='img?url=" + encodeURIComponent(json.img) + "'>查看</a>");
+            }
+            $("#share").text(json.share);
+            $("#grant").text(json.grant);
+        });
+
+    </script>
+</block>

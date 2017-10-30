@@ -1,0 +1,264 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+        .operateBtn{
+            font-size:12px;
+            padding:0px 5px;
+            color:blue;
+
+        }
+        .operateBtn:hover{
+            cursor:pointer;
+        }
+        .td1 {
+            text-align: right;
+            width: 100px;
+        }
+        .td2 {
+            text-align: left;
+            width: 1000px;
+        }
+        .c1 {
+            float: left;width: 600px;height: auto;display: inline;
+        }
+        .c1 div{
+            float:left;height: 25px;line-height: 25px;margin-right: 20px;
+        }
+        .c1 div label{
+            margin-left: 5px;
+        }
+        .c2 {
+            float: left;width: 100%;height: auto;
+            margin-top: 5px;
+        }
+        .c2 div{
+            float:left;height: 25px;line-height: 25px;margin-right: 20px;
+            width:100%
+        }
+    </style>
+</block>
+<block name="body">
+    <div class="main-title">
+        <h2 id="mytitle"></h2>
+    </div>
+<form action="./add" method="post">
+    <input id="project" name="project" type="hidden" value=""/>
+    <table cellpadding="4" cellspacing="2">
+        <tr>
+            <td class="td1">
+                <span style="color:red">*</span><label for="name">商户名称:</label>
+            </td>
+            <td class="td2">
+                <input id="name" name="name"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="td1">
+                <span style="color:red">*</span><label for="id">商户ID号:</label>
+            </td>
+            <td class="td2">
+                <input id="id" name="id"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="td1">
+                <span style="color:red">*</span><label for="address">商户地址:</label>
+            </td>
+            <td class="td2">
+                <input id="address" name="address"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="td1">
+                <span style="color:red">*</span><label for="tel">商户电话:</label>
+            </td>
+            <td class="td2">
+                <input id="tel" name="tel"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="td1">
+                频道授权:
+            </td>
+            <td class="td2" style="height: auto">
+                <div class="c1">
+                </div>
+                <div class="c2">
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div id="sample_2_wrapper" class="dataTables_wrapper form-inline" role="grid" style="padding-left:10px;">
+        <p style="float: left;margin-left: 20px"><input id="sub1" type="button" value="保存" onclick="save()"/></p>
+        <p style="float: left;margin-left: 10px"><input id="sub2" type="button" value="返回" onclick="window.location='./distributor'"/></p>
+    </div>
+</form>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/pinyin.js"></script>
+    <script type="text/javascript">
+        var op=1;
+        var sid="0";
+        var category=eval({$category});
+        var _location="";//;
+        var authcategoriesid="";
+        $(document).ready(function(){
+            _location={$preview};
+            query();
+            initauthcategories();
+        });
+
+        function initauthcategories() {
+            $(".c1").html("");
+            for(var i in category){
+                var item=category[i];
+                $('<div><input name="authcategories" type="checkbox" value="'+item.id+'"/><label>'+item.name+'</label></div>').appendTo($(".c1"));
+            }
+            $("input[name='authcategories']").change(function () {
+                $(".c2").html("");
+                authcategoriesid="";
+                addauthcategories();
+            });
+        }
+
+        function addauthcategories(){
+            $("input[name='authcategories']").each(function () {
+                if ($(this).is(":checked")) {
+                    var id = $(this).val();
+                    var title = $(this).next().html();
+                    var _href=_location+"?cid="+id+"&distid="+$("#id").val();
+                    $("<div>"+title+"链接："+"<a target='_blank' href='"+_href+"'>"+_href+"</a></div>").appendTo($(".c2"));
+                    authcategoriesid +=(id+",");
+                }
+            });
+        }
+        function updateCid(){
+            authcategoriesid='';
+            $("input[name='authcategories']").each(function () {
+                if ($(this).is(":checked")) {
+                    var id = $(this).val();
+                    authcategoriesid +=(id+",");
+                }
+            });
+
+        }
+        function query(){
+            var id=GetQueryString("id");
+            if(!id) {
+                $("#name").keyup(function(){
+                    var val=$(this).val();
+                    $("#id").val(ConvertPinyin(val));
+                });
+                op=1;
+                $("#mytitle").html("添加分销商&nbsp;&nbsp;&nbsp;");
+                return;
+            }
+            else
+            {
+                op=2;
+                $("#mytitle").html("修改分销商&nbsp;&nbsp;&nbsp;");
+                $("#id").attr("disabled","disabled");
+                var ii=layer.msg("加载中……");
+                $.ajax({
+                    type: "POST",
+                    url: "./listDistributors?ajax=1",
+                    dataType:"json",
+                    data:"id="+id,
+                    success: function (data) {
+                        layer.close(ii);
+                        if(data.state!=0){
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        var item=data.data[0];
+                        sid=item["id"];
+                        $("#name").val(item["name"]);
+                        $("#tel").val(item["tel"]);
+                        $("#address").val(item["address"]);
+                        $("#id").val(item["id"]);
+                        var str=item["authcategories"];
+                        var ar=str.split(',');
+                        for(var i in ar){
+                            var item=ar[i];
+                            if(item=="")continue;
+                            $("input[name='authcategories']").each(function () {
+                                if($(this).val()==item){
+                                    $(this).attr("checked",true);
+
+                                    var _href=_location+"?cid="+$(this).val()+"&distid="+$("#id").val();
+                                    $("<div>"+$(this).next().html()+"链接："+"<a target='_blank' href='"+_href+"'>"+_href+"</a></div>").appendTo($(".c2"));
+                                }
+                            });
+
+
+                        }
+                    }
+                });
+            }
+        }
+
+        function GetQueryString(name)
+        {
+            var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+            var r = decodeURIComponent(window.location.search).substr(1).match(reg);
+            if(r!=null)return  unescape(r[2]); return null;
+        }
+
+        function save(){
+
+            if($("#name").val().length==0){
+                alert("商户名称不能为空！");
+                $("#name").focus();
+                return false;
+            }
+            if($("#id").val().length==0){
+                alert("商户ID号不能为空！");
+                $("#id").focus();
+                return false;
+            }
+            if($("#address").val().length==0){
+                alert("商家地址不能为空！");
+                $("#address").focus();
+                return false;
+            }
+            if($("#tel").val().length==0){
+                alert("商户电话不能为空！");
+                $("#tel").focus();
+                return false;
+            }
+            updateCid();
+            if(authcategoriesid.length>1){
+                authcategoriesid=authcategoriesid.substring(0,authcategoriesid.length-1);
+            }
+
+            var data="name="+ encodeURIComponent($("#name").val());
+            data+="&id="+encodeURIComponent($("#id").val());
+            data+="&address="+encodeURIComponent($("#address").val());
+            data+="&tel="+encodeURIComponent($("#tel").val());
+            data+="&authcategories="+encodeURIComponent(authcategoriesid);
+            data+="&sid="+sid;
+            data+="&op="+op;
+            var ii=layer.msg("操作中……");
+            $.ajax({
+                type: "POST",
+                url: "./savedistributor?ajax=1",
+                dataType:"json",
+                data:data,
+                success: function (data) {
+                    layer.close(ii);
+                    if(data.state!=0){
+                        layer.alert(data.msg);
+                        return;
+                    }
+                    else{
+                        alert("操作成功！");
+                        window.location='./distributor';
+                    }
+                }
+            });
+        }
+
+
+    </script>
+</block>

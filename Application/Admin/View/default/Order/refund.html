@@ -1,0 +1,215 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+        h4{
+            border-bottom: 1px solid #ccc;
+            font-size: 18px;
+            height: 32px;
+            margin: 0;
+            line-height: 25px;
+            padding-left: 12px;
+            margin-bottom: 10px;
+        }
+        .content{
+            width: 100%;
+            padding: 0 12px;
+        }
+        .content .content-1{
+            display: inline-block;
+            margin-right: 20px;
+            margin-top:10px;
+        }
+        .content input,select{
+            width: 140px;
+        }
+        .content span{
+            display: inline-block;
+            width: 80px;
+        }
+        .btn{
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+    </style>
+</block>
+<block name="body">
+    <h4>退费订单</h4>
+    <div class="content">
+        <div class="content-1"><span>用户账号:</span><input type="text" id="carName"></div>
+        <div class="content-1">
+            <span>状态:</span>
+            <select name="" id="haveChange">
+                <option value="">全部</option>
+                <option value="">已退费</option>
+                <option value="">已拒绝</option>
+                <option value="">未处理</option>
+                <option value="">已处理</option>
+            </select>
+        </div>
+        <button class="btn" id="query">查询</button>
+        <!--分页-->
+        <div class="table-1">
+            <table class="table table-bordered" id="sample" aria-describedby="sample_2_info">
+                <thead>
+                <tr role="row">
+                    <th>序号</th>
+                    <th>商品名称</th>
+                    <th>订单编号</th>
+                    <th>用户账号</th>
+                    <th>订单金额</th>
+                    <th>订单时间</th>
+                    <th>退费提交时间</th>
+                    <th>处理时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody role="alert" aria-live="polite" aria-relevant="all" id="tbody">
+                </tbody>
+                <div id="page" class="m-pagination"></div>
+            </table>
+        </div>
+    </div>
+
+</block>
+<block name="script">
+    <link rel="stylesheet" href="__PUBLIC__/css/style-metro.css"/>
+    <link rel="stylesheet" href="__MODULE_STATIC__/jedate/skin/jedate.css"/>
+    <script type="text/javascript" src="__MODULE_STATIC__/jedate/jedate.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script src="__PUBLIC__/js/page/jquery.pagination-1.2.7.js"></script>
+    <script src="__PUBLIC__/js/page/page.js"></script>
+    <script>
+        function int(){
+            query();
+        }
+        function query() {
+            $("#page").page('destroy');
+            var ii = layer.msg('加载中');
+            $("#page").page({
+                debug: false,
+                showInfo: true,
+                showJump: true,
+                showPageSizes: false,
+                remote: {
+                    url: "/index.php/Admin/Refund/refundMsg",
+                    params: {},
+                    success: function (data) {
+                        if (data.state != 0) {
+                            layer.close(ii);
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        $("#tbody").empty();
+                        var num = 1;
+                        $.each(data.data, function (index, item) {
+                            if(item.state == 0){
+                               var state = "<span class='change' style='width: 30px;cursor: pointer;color: deepskyblue;'>退费</span><span class='change' style='width: 30px;cursor: pointer;color: deepskyblue;'>拒绝</span>"
+                            }
+                            if(item.state == 1){
+                                var state = "<span style='width: 40px;'>已退费</span>"
+                            }
+                            if(item.state == 2){
+                                var state = "<span style='width: 40px;'>已拒绝</span>"
+                            }
+                            $("#tbody").append(
+                                "<tr class='tr'  data-id='" + item.orderno +"'>" +
+                                "<td class=''>" + num + "</td>" +
+                                "<td class=''>" +item.activityname +"</td>" +
+                                "<td class=''>" +item.orderno+ "</td>" +
+                                "<td class=''>" +item.mobile+ "</td>" +
+                                "<td class=''>" +item.ordermoney+ "</td>" +
+                                "<td class=''>" +item.ordertime+ "</td>" +
+                                "<td class=''>" +item.rowtime+ "</td>" +
+                                "<td class=''>" +item.operatetime+ "</td>" +
+                                "<td class=''>" + state + "</td>" +
+                                "</tr>"
+                            );
+                            num++;
+                        });
+                        layer.close(ii);
+                    }
+                }
+            });
+        }
+        //状态修改 及时刷新
+        $("#sample").on('click','.change',function(){
+            //当前时间
+            var date = new Date();
+            var year = date.getFullYear();
+            var month = date.getMonth()+1;
+            var day = date.getDate();
+            var hour = date.getHours();
+            var minute = date.getMinutes();
+            var second = date.getSeconds();
+            var newDate = year+'-'+month+'-'+day+' '+hour +':'+minute+':'+second;
+              var orderno = $(this).parents('tr').data("id");
+              var state = $(this).text();
+              $.ajax({
+                  type:"POST",
+                  url:"/index.php/Admin/Refund/changeState",
+                  data:{
+                      orderno:orderno,
+                      state:state,
+                      time:newDate
+                  }
+              });
+              location.reload();
+        });
+        //查询
+        $("#query").on('click',function(){
+            var carName = $("#carName").val();
+            var state = $("#haveChange option:selected").text();
+            $("#page").page('destroy');
+            var ii = layer.msg('加载中');
+            $("#page").page({
+                debug: false,
+                showInfo: true,
+                showJump: true,
+                showPageSizes: false,
+                remote: {
+                    url: "/index.php/Admin/Refund/RefundQuery",
+                    params: {
+                        carname:carName,
+                        state:state
+                    },
+                    success: function (ret) {
+                        if (ret.state != 0) {
+                            layer.close(ii);
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        $("#tbody").empty();
+                        var num = 1;
+                        $.each(ret.data, function (index, item) {
+                            if(item.state == 0){
+                                var state = "<span class='change' style='width: 30px;cursor: pointer;color: deepskyblue;'>退费</span><span class='change' style='width: 30px;cursor: pointer;color: deepskyblue;'>拒绝</span>"
+                            }
+                            if(item.state == 1){
+                                var state = "<span style='width: 40px;'>已退费</span>"
+                            }
+                            if(item.state == 2){
+                                var state = "<span style='width: 40px;'>已拒绝</span>"
+                            }
+                            $("#tbody").append(
+                                "<tr class='tr'  data-id='" + item.orderno +"'>" +
+                                "<td class=''>" + num + "</td>" +
+                                "<td class=''>" +item.activityname +"</td>" +
+                                "<td class=''>" +item.orderno+ "</td>" +
+                                "<td class=''>" +item.mobile+ "</td>" +
+                                "<td class=''>" +item.ordermoney+ "</td>" +
+                                "<td class=''>" +item.ordertime+ "</td>" +
+                                "<td class=''>" +item.rowtime+ "</td>" +
+                                "<td class=''>" +item.operatetime+ "</td>" +
+                                "<td class=''>" + state + "</td>" +
+                                "</tr>"
+                            );
+                            num++;
+                        });
+                        layer.close(ii);
+                    }
+                }
+            });
+        });
+        int();
+    </script>
+</block>

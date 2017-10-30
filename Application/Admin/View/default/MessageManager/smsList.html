@@ -1,0 +1,92 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+
+    </style>
+</block>
+<block name="body">
+    <!-- 标题栏 -->
+    <div class="main-title">
+        <h2>用户消息&nbsp;&nbsp;&nbsp;</h2>
+    </div>
+    <div class="portlet box gray" style="padding-left:10px;">
+        <div class="portlet-body">
+            <div class="content-padded">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th style="min-width:60px;">序号</th>
+                        <th>消息标题</th>
+                        <th style="min-width:140px;">内容</th>
+                        <th style="min-width:80px;">操作人</th>
+                        <th>操作时间</th>
+                        <th>生效时间</th>
+                        <th style="min-width:80px;">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody">
+                    </tbody>
+                </table>
+                <div id="page" class="m-pagination"></div>
+            </div>
+
+        </div>
+
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <link rel="stylesheet" href="__PUBLIC__/js/page/jquery.pagination.css"/>
+    <script src="__PUBLIC__/js/page/jquery.pagination-1.2.7.js"></script>
+    <script src="__PUBLIC__/js/page/page.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            query();
+        });
+        //拉取分页数据
+        function query() {
+
+            $("#page").page('destroy');
+            var ii = layer.msg('加载中');
+            $("#page").page({
+                debug: false,
+                showInfo: true,
+                showJump: true,
+                showPageSizes: false,
+                remote: {
+                    url: "/index.php/Admin/MessageManager/smsQuery",
+                    params: {
+
+                    },
+                    success: function (data) {
+
+                        if (data.state != 0) {
+                            layer.close(ii);
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        $("#tbody").empty();
+                        $.each(data.data, function (index, item) {
+                            $("#tbody").append("<tr class='tr'>" +
+                                    "<td>"+(index+1)+"</td>" +
+                                    "<td class='message_title'>" +item.title+ "</td>" +
+                                    "<td class='target' style='max-width:240px;overflow:hidden;'>" + item.content+ "</td>" +
+                                    "<td class='manager'>" + item.operator + "</td>" +
+                                    "<td class='time'>" + item.operatetime + "</td>" +
+                                    "<td class='time'>" + item.rowtime + "</td>" +
+                                    "<td class='modify'><a href='"+getTarget(item.id)+"' target='_self'>修改</a></td>" +
+                                    " </tr>");
+                        });
+                        layer.close(ii);
+
+                    }
+                }
+            });
+        }
+        function getTarget(id){
+            var target =  './smsMessageDetail?id='+id;
+            return target;
+        }
+
+    </script>
+</block>

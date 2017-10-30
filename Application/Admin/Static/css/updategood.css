@@ -1,0 +1,18 @@
+.eboprice_label ,.eboprice_input{
+    float:left;
+}
+.eboprice_input{
+    width:40px;
+    height:30px;
+    margin-top:5px;
+    line-height:30px;
+}
+.eboprice_label{
+    margin-bottom:0px;
+    height:40px;
+    line-height:40px;
+    margin-left:5px;
+}
+.single_item{
+    float:left;
+}

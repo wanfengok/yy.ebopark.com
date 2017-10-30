@@ -1,0 +1,250 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+        .operateBtn{
+            font-size:12px;
+            padding:0px 5px;
+            color:blue;
+
+        }
+        .operateBtn:hover{
+            cursor:pointer;
+        }
+        .td1 {
+            text-align: right;
+            width: 100px;
+        }
+        .td2 {
+            text-align: left;
+            width: 160px;
+        }
+    </style>
+</block>
+<block name="body">
+    <div class="main-title">
+        <h2 id="mytitle"></h2>
+    </div>
+<form action="./add" method="post">
+    <input id="id" name="id" type="hidden" value=""/>
+    <table cellpadding="4" cellspacing="2">
+        <tr>
+            <td class="td1">
+                <span style="color:red">*</span><label for="merchantid">选择商户:</label>
+            </td>
+            <td class="td2">
+                <select id="merchantid"></select>
+            </td>
+        </tr>
+        <tr>
+            <td class="td1">
+                <span style="color:red">*</span><label for="username">用户名:</label>
+            </td>
+            <td class="td2">
+                <input id="username" name="username" maxlength="20"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="td1">
+                <span style="color:red">*</span><label for="pwd">设置密码:</label>
+            </td>
+            <td class="td2">
+                <input id="pwd" name="pwd" type="password" value="" maxlength="20"/><span style="color:red;margin-left: 10px">(备注：密码默认123456)</span>
+            </td>
+        </tr>
+        <tr style="display:none">
+            <td class="td1">
+                <span style="color:red">*</span><label for="realname">姓名:</label>
+            </td>
+            <td class="td2">
+                <input id="realname" name="realname" maxlength="20"/>
+            </td>
+        </tr>
+        <tr style="display:none">
+            <td class="td1">
+                <span style="color:red">*</span><label for="tel">手机号:</label>
+            </td>
+            <td class="td2">
+                <input id="tel" name="tel"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="td1">
+                <input id="enablercvmsg" type="checkbox" style="width: 15px;height: 15px"/>
+            </td>
+            <td class="td2" style="width: 400px">
+                <div style="float: left;line-height: 25px;">实时接收用户订单的微信消息</div>
+                <div style="float: left;margin-left: 15px"><input id="rcvmsgtels" style="width: 200px;display: none"/></div>
+            </td>
+        </tr>
+    </table>
+    <div id="sample_2_wrapper" class="dataTables_wrapper form-inline" role="grid" style="padding-left:10px;">
+        <p style="float: left;margin-left: 20px"><input id="sub1" type="button" value="保存" onclick="save()"/></p>
+        <p style="float: left;margin-left: 10px"><input id="sub2" type="button" value="返回" onclick="window.location='./validate'"/></p>
+    </div>
+</form>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script type="text/javascript">
+        var op=1;
+        var sid="0";
+        $(document).ready(function(){
+            $("#enablercvmsg").click(function(){
+                if($(this).is(":checked")){
+                    $("#rcvmsgtels").css("display","block");
+                }
+                else{
+                    $("#rcvmsgtels").css("display","none");
+                    $("#rcvmsgtels").val("");
+                }
+            });
+            bindselect();
+            query();
+        });
+
+        function bindselect(){
+            $.ajax({
+                type: "POST",
+                url: "./getMerchantNames",
+                dataType:"json",
+                data:"id="+id,
+                success: function (data) {
+                    if(data.state==0){
+                        $("#merchantid").empty();
+                        var array=data.data;
+                        for(var i=0;i<array.length;i++) {
+                            var item=array[i];
+                            $("<option value=\""+item["id"]+"\">"+item["name"]+"</option>").appendTo($("#merchantid"));
+                        }
+                        return;
+                    }
+                }
+            });
+        }
+
+        function query(){
+            var id=GetQueryString("id");
+            if(!id) {
+                op=1;
+                $("#mytitle").html("验码账户/添加账户&nbsp;&nbsp;&nbsp;");
+                $("#username").val("");
+                $("#pwd").val("123456");
+                return;
+            }
+            else
+            {
+                op=2;
+                $("#mytitle").html("验码账户/修改账户&nbsp;&nbsp;&nbsp;");
+                var ii=layer.msg("加载中……");
+                $.ajax({
+                    type: "POST",
+                    url: "./listMerchantUser?ajax=1",
+                    dataType:"json",
+                    data:"id="+id,
+                    success: function (data) {
+                        layer.close(ii);
+                        if(data.state!=0){
+                            layer.alert(data.msg);
+                            return;
+                        }
+                        var item=data.data[0];
+                        $("#merchantid").val(item["merchantid"]);
+                        $("#username").val(item["username"]);
+                        $("#realname").val(item["realname"]);
+                        $("#tel").val(item["tel"]);
+                        if(eval(item["enablercvmsg"])==1){
+                            $("#rcvmsgtels").css("display","block");
+                        }
+                        else{
+                            $("#rcvmsgtels").css("display","none");
+                        }
+                        $("#enablercvmsg").attr("checked",eval(item["enablercvmsg"])==1);
+                        $("#rcvmsgtels").val(item["rcvmsgtels"]);
+                        $("#id").val(item["id"]);
+                        $("#pwd").val(item["pwd"]);
+                        sid=item["id"];
+                    }
+                });
+            }
+        }
+
+        function GetQueryString(name)
+        {
+            var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+            var r = decodeURIComponent(window.location.search).substr(1).match(reg);
+            if(r!=null)return  unescape(r[2]); return null;
+        }
+
+        function save(){
+            if($("#username").val().length==0){
+                alert("用户名不能为空！");
+                $("#username").focus();
+                return false;
+            }
+            if($("#realname").val().length==0){
+                //alert("姓名不能为空！");
+               // $("#realname").focus();
+               // return false;
+            }
+            if($("#tel").val().length==0){
+               // alert("手机号不能为空！");
+                //$("#tel").focus();
+                //return false;
+            }
+            if($("#pwd").val().length==0){
+                alert("密码不能为空！");
+                $("#pwd").focus();
+                return false;
+            }
+            if($("#enablercvmsg").is(":checked")&&$("#rcvmsgtels").val().length==0) {
+                alert("请填写发送消息的手机号！");
+                $("#rcvmsgtels").focus();
+                return;
+            }
+            if($("#enablercvmsg").is(":checked")){
+                var tel=$("#rcvmsgtels").val();
+                var ar=tel.split(',');
+                for(var i=0;i<ar.length;i++){
+                    if(!(/^[1][\d]{10}$/g).test(ar[i])){
+                        alert("手机号格式错误！");
+                        $("#rcvmsgtels").focus();
+                        return;
+                    }
+                }
+            }
+
+
+
+            var data="merchantid="+ encodeURIComponent($("#merchantid").val());
+            data+="&id="+encodeURIComponent($("#id").val());
+            data+="&username="+encodeURIComponent($("#username").val());
+            data+="&tel="+encodeURIComponent($("#tel").val());
+            data+="&realname="+encodeURIComponent($("#realname").val());
+            data+="&enablercvmsg="+($("#enablercvmsg").is(":checked")?1:0);
+            data+="&rcvmsgtels="+encodeURIComponent($("#rcvmsgtels").val());
+            data+="&pwd="+encodeURIComponent($("#pwd").val());
+            data+="&sid="+sid;
+            data+="&op="+op;
+            var ii=layer.msg("操作中……");
+            $.ajax({
+                type: "POST",
+                url: "./savemerchantuser?ajax=1",
+                dataType:"json",
+                data:data,
+                success: function (data) {
+                    layer.close(ii);
+                    if(data.state!=0){
+                        layer.alert(data.msg);
+                        return;
+                    }
+                    else{
+                        alert("操作成功！");
+                        window.location='./validate';
+                    }
+                }
+            });
+        }
+
+
+    </script>
+</block>

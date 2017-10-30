@@ -1,0 +1,428 @@
+<extend name="Public/base"/>
+<block name="style">
+    <style>
+        .query_line {
+            height: 45px;
+            line-height: 45px;
+        }
+
+        .query_line .input {
+            height: 32px;
+            line-height: 32px;
+        }
+
+        .query_line select {
+            display: inline-block;
+            width: 163px;
+            height: 30px;
+            font-size: 16px;
+        }
+
+        .divider-line {
+            width: 100%;
+            height: 1px;
+            background: lightgrey;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .tab_container {
+            width: 100%;
+            float: left;
+            margin-top: 20px;
+        }
+
+        .left_container {
+            float: left;
+            width: 80%;
+            border-right: 1px solid lightgrey;
+        }
+
+        .right_container {
+            float: left;
+            width: 20%;
+        }
+
+        .tab_container {
+            border: 1px solid lightgrey;
+        }
+
+        .navi_bar {
+            height: 40px;
+            line-height: 40px;
+            padding-left: 10px;
+        }
+
+        .tabs li {
+            list-style-type: none;
+            height: 30px;
+            line-height: 30px;
+        }
+
+        .goodslist li {
+            list-style-type: none;
+            height: 40px;
+            line-height: 40px;
+            border-top: 1px solid lightgrey;
+            padding-left: 10px;
+        }
+
+        .goodslist {
+            padding-left: 0px;
+            margin-bottom: 0px;
+        }
+    </style>
+</block>
+<block name="body">
+    <div id="tab_container" >
+        <div class="query_line" style="padding-left:10px;">
+            <span style="padding-right:10px;">商品频道:</span>
+            <select id="cates" v-model="selectedCateIndex">
+                <option  v-bind:value="index" v-for="(item,index) in totaldata.cates" v-text="item.name"></option>
+            </select>
+        </div>
+        <!--container-->
+        <div class="tab_container">
+            <div class="left_container" >
+                <div v-show="showTabBar" class="navi_bar"><span style="margin-right:20px;" v-text="currentTabName"></span><a
+                        style="margin-right:10px;" v-on:click="renameCurrentTab()">重命名</a><a v-on:click="delCurrentTab()">删除</a></div>
+                <div class="navi_bar" style="background:lightgrey;">
+                    <input type="checkbox" id="select_all" v-on:click="operateAll()"/><label for="select_all"
+                                                                   style="padding-left:10px;">全选</label>
+
+                    <div style="display:inline-block" v-show="showMoveContainer">
+                        <span>移动至</span>
+                        <select v-model="targetTab">
+                            <option v-bind:value="index" v-for="(item,index) in currentTabs" v-text="item.name"></option>
+                            <option value="-1">未知</option>
+                        </select>
+                        <input type="button" class="btn" value="确定" style="margin-left:10px;" v-on:click="move()"/>
+                    </div>
+                </div>
+                <!--goods list-->
+                <ul class="goodslist">
+                    <li v-for="(item,index) in getCurrentTabGoods">
+                        <input type="checkbox" v-bind:id="item.id" name="goods"/>
+                        <label style="margin-left:10px;"  v-bind:for="item.id" v-text="item.name"></label>
+                        <div style="display:inline-block;margin-left:20px;"><a v-on:click="addOrder(index)"  v-show="index!=0">升序</a><a v-on:click="delOrder(index)" style="margin-left:10px;" v-show="index!=(getCurrentTabGoods.length-1)">降序</a>
+                            <a v-on:click="top(index)" style="margin-left:10px;" v-show="index!=0">置顶</a>
+                        </div>
+                    </li>
+
+                </ul>
+                <!--goods list end-->
+
+
+            </div>
+            <div class="right_container">
+                <ul class="tabs">
+                    <li v-on:click="onClickTab(index)" v-for="(item,index) in currentTabs"><span v-text="item.name"></span>(<span v-text="amountOfGoods(index)"></span>)</li>
+                    <li v-on:click="onClickTab(-1)">未知(<span v-text="amountOfGoods(-1)"></span>)</li>
+                    <li><a onclick="addTab();">+添加标签</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__MODULE_STATIC__/jedate/jedate.js"></script>
+    <script type="text/javascript" src="__MODULE_STATIC__/js/lib.js"></script>
+    <script type="text/javascript" src="__MODULE_STATIC__/js/vue.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/static/layer/layer.js"></script>
+    <script>
+        var _data = {$data};
+        var pageController = null;
+        var default_cate_index=getCookie("default_category_index");
+//        var default_cate_index=3;
+        $(function () {
+            console.log(_data);
+            pageController = new Vue({
+                el: "#tab_container",
+                data: {
+                    totaldata: _data,
+                    selectedCateIndex:default_cate_index==null?0:default_cate_index,
+                    selectedTabIndex:-1,
+                    targetTab:-1,
+                    //显示在右侧商品列表
+                    goods:[],
+
+
+                },
+                created: function () {
+                    this.selectedTabIndex=this.totaldata.cates[this.selectedCateIndex].tabs.length==0?-1:0;
+                    this.targetTab=this.selectedTabIndex;
+                },
+                computed:{
+
+                    currentTabName:function(){
+                        return this.currentTabObj==null?"":this.currentTabObj.name;
+                    },
+                    currentTabObj:function(){
+
+                        if(!this.showTabBar){
+                            return null;
+                        }
+                        return this.totaldata.cates[this.selectedCateIndex].tabs[this.selectedTabIndex];
+
+                    },
+                    //右侧显示的标签列表
+                    currentTabs:function(){
+
+                        return this.totaldata.cates[this.selectedCateIndex].tabs;
+                    },
+                    showTabBar:function(){
+                        return this.selectedTabIndex!=-1;
+                    },
+                    showMoveContainer:function(){
+                        return this.currentTabs.length!=0;
+                    },
+                    //当前标签的商品
+                    getCurrentTabGoods:function(){
+                        var goods=this.getGoodsOfOneTab(this.selectedTabIndex);
+                        //排序
+                        goods.sort(function(a,b){
+                            return b.order- a.order;
+                        });
+                        return goods;
+                    },
+
+                },
+                methods:{
+                    isOwnedToCate:function(subcateid){
+                            for(var index=0;index< this.totaldata.cates[this.selectedCateIndex].tabs.length;index++){
+                                var tab=this.totaldata.cates[this.selectedCateIndex].tabs[index];
+                                if(subcateid==tab.id){
+                                    return true;
+                                }
+                            }
+                        return false;
+                    },
+                    updateOrder:function(index,targetIndex){
+                        var oriObj=this.getRelationOfGoodsAndTab(index);
+                        var targetObj=this.getRelationOfGoodsAndTab(targetIndex);
+                        var oriOrder=oriObj.order;
+                        oriObj.order=targetObj.order;
+                        targetObj.order=oriOrder;
+
+                    },
+                    setOrderByIndex:function(index,order){
+                        var oriObj=this.getRelationOfGoodsAndTab(index);
+                        oriObj.order=order;
+                    },
+                    delOrder:function(index){
+                        changeOrder(index,Number(index)+1);
+                    },
+                    addOrder:function(index){
+                        changeOrder(index,Number(index)-1);
+                    },
+                    top:function(index){
+                        topOrder(index);
+                    },
+                    getRelationOfGoodsAndTab:function(index){
+                       var goodObj= this.getCurrentTabGoods[index];
+                       var goodid= goodObj.id;
+                        var subid=this.currentTabObj.id;
+                        var subgoods=this.totaldata.subcate_goods;
+                        for(var subindex=0;subindex<subgoods.length;subindex++){
+                            if(goodid==subgoods[subindex].goodsid&&subid==subgoods[subindex].subcategoryid){
+                               return subgoods[subindex];
+                            }
+                        }
+                    },
+                    //全选或不选
+                    operateAll:function(){
+                       if(!$("#select_all").is(":checked")){
+                            $("input[name=goods]").prop("checked",false);
+                       }else{
+                           $("input[name=goods]").prop("checked",true);
+                       }
+                    },
+                    move:function(){
+                        var targetGoods= $("input[name=goods]");
+                        var ids=[];
+                        for(var index=0;index<targetGoods.length;index++){
+                            if($(targetGoods[index]).is(":checked")){
+                                ids.push($(targetGoods[index]).attr("id"));
+                            }
+                        }
+                        var subid= this.targetTab==-1?-1:this.currentTabs[this.targetTab].id;
+                        var orid=this.currentTabObj==null?"":this.currentTabObj.id;
+                        moveGoodsToTab(ids,subid,orid)
+                    },
+                    //删除当前标签
+                    delCurrentTab:function(){
+                        var tabObj=pageController.currentTabObj;
+                        delTab(tabObj.name,tabObj.id);
+                    },
+                    //重命名当前标签
+                    renameCurrentTab:function(){
+                        layer.prompt({"title": "重命名"}, function (val, index) {
+                            layer.close(index);
+                            var tabname = val;
+                            var ParentId = _data.cates[Number($("#cates").val())].id;
+                            updateTab(tabname,ParentId,pageController.currentTabObj.id);
+
+                        });
+                    },
+                    //点击标签
+                    onClickTab:function(index){
+                        this.selectedTabIndex=index;
+                    },
+                    //未知标签的商品数量
+                    amountOfOtherGoods:function(){
+//                        var amount=0;
+//                        for(var index=0;index<this.totaldata.cates[this.selectedCateIndex].tabs.length;index++){
+//                            amount+=this.amountOfGoods(index);
+//                        }
+//                        return this.totaldata.cates[this.selectedCateIndex].goods.length-amount;
+                        return this.getGoodsOfOtherTab().length;
+                    },
+                    //某个标签的商品数量
+                    amountOfGoods:function(tabindex){
+                        if(tabindex==-1){
+                            return this.amountOfOtherGoods();
+                        }
+                        return this.getGoodsOfOneTab(tabindex).length;
+                    },
+                    getGoodsOfOtherTab:function(){
+
+                        var subgoods=this.totaldata.subcate_goods;
+                        var totalGoods=this.totaldata.cates[this.selectedCateIndex].goods;
+                        var goods=totalGoods.clone();
+                        for(var subindex=0;subindex<subgoods.length;subindex++){
+                        for(var index=0;index<goods.length;index++){
+                                if(goods[index].id==subgoods[subindex].goodsid&&this.isOwnedToCate(subgoods[subindex].subcategoryid)){
+                                    goods.del(index);
+                                }
+                            }
+                        }
+                        return goods;
+                    },
+                    //获取某个标签的商品
+                    getGoodsOfOneTab:function(tabindex){
+                        if(tabindex==-1){
+                            return this.getGoodsOfOtherTab();
+                        }
+                        var tabObj=this.currentTabs[tabindex];
+                        var subgoods=this.totaldata.subcate_goods;
+                        var totalGoods=this.totaldata.cates[this.selectedCateIndex].goods;
+                        var goods=[];
+                        for(var subindex=0;subindex<subgoods.length;subindex++){
+                        for(var index=0;index<totalGoods.length;index++){
+                                if(totalGoods[index].id==subgoods[subindex].goodsid&&subgoods[subindex].subcategoryid==tabObj.id){
+                                    var item=totalGoods[index];
+                                        item.order=subgoods[subindex].order;
+                                        goods.push(item);
+                                }
+                            }
+                        }
+                        return goods;
+                    }
+
+                },
+            });
+
+        });
+
+        function changeOrder(index,targetIndex){
+            var oriObj=pageController.getRelationOfGoodsAndTab(index);
+            var targetObj=pageController.getRelationOfGoodsAndTab(targetIndex);
+            $.getJSON("./changeOrder?origoodid="+oriObj.goodsid+"&oriorder="+oriObj.order+"&order="+targetObj.order+"&goodid="+targetObj.goodsid+"&cateid="+targetObj.subcategoryid,function(data){
+                if (data.state != 0) {
+                    layer.alert(data.msg);
+                    return;
+                }
+                var alert= layer.alert("操作成功", function () {
+                    layer.close(alert);
+                    pageController.updateOrder(index,targetIndex);
+                });
+
+            });
+        }
+        function topOrder(index){
+            var oriObj=pageController.getRelationOfGoodsAndTab(index);
+            var targetObj=pageController.getRelationOfGoodsAndTab(0);
+            var order=Number(targetObj.order)+1;
+            $.getJSON("./topOrder?origoodid="+oriObj.goodsid+"&oriorder="+order+"&cateid="+targetObj.subcategoryid,function(data){
+                if (data.state != 0) {
+                    layer.alert(data.msg);
+                    return;
+                }
+                var alert= layer.alert("操作成功", function () {
+                    layer.close(alert);
+                    pageController.setOrderByIndex(index,order);
+                });
+
+            });
+        }
+        function moveGoodsToTab(ids,subid,orid){
+            if(!Array.isArray(ids)||ids.length==0){
+                return ;
+            }
+            var ii = layer.msg("操作中……");
+            $.getJSON("./move?ids="+ids.toString()+"&subid="+subid+"&orid="+orid,function(data){
+                layer.close(ii);
+                if (data.state != 0) {
+                    layer.alert(data.msg);
+                    return;
+                }
+
+               layer.alert("操作成功", function () {
+                   updateDefaultCatetoryIndex();
+                });
+            });
+        }
+        //删除标签
+        function delTab(name,id){
+           layer.confirm("确认删除标签:"+name+"?",function(){
+               var ii = layer.msg("操作中……");
+               $.getJSON("./delTab?id="+id, function (data) {
+                   layer.close(ii);
+                   if (data.state != 0) {
+                       layer.alert(data.msg);
+                       return;
+                   }
+                   layer.alert("操作成功", function () {
+                       updateDefaultCatetoryIndex();
+                   });
+
+               });
+           });
+        }
+        /**
+         * 添加标签
+         */
+        function addTab() {
+            layer.prompt({"title": "添加标签"}, function (val, index) {
+                layer.close(index);
+                var tabname = val;
+                var ParentId = _data.cates[Number($("#cates").val())].id;
+                updateTab(tabname,ParentId);
+
+            });
+        }
+        function updateTab(name,pid,id){
+             var url="./updateTab?Name=" + name + "&ParentId=" + pid;
+            if(id!=undefined){
+                url+="&id="+id;
+            }
+            var ii = layer.msg("操作中……");
+            $.getJSON(url, function (data) {
+                layer.close(ii);
+                if (data.state != 0) {
+                    layer.alert(data.msg);
+                    return;
+                }
+                layer.alert("操作成功", function () {
+                    updateDefaultCatetoryIndex();
+                });
+
+            });
+        }
+        highlight_subnav("{:U('CategoryHome/index')}");
+        function updateDefaultCatetoryIndex(){
+            setCookie("default_category_index",$("#cates").val());
+            window.location.reload(true);
+        }
+    </script>
+</block>

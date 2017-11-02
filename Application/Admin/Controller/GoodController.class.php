@@ -1818,17 +1818,17 @@ class GoodController extends BaseController
             } else {
                 $offset = ($pageIndex - 1) * $pageSize;
                 //已取消
-                $totalarray = D("GoodsMerchantUser")->query("select count(*) as count from activity_dn97 a INNER JOIN orders_canceled o on (a.OrderNo=o.orderno or a.OrderNo=o.OrgOrderNo) left join goods_info_base b on a.activityid=b.id LEFT JOIN goods_info_item i on a.itemid=i.id left join goods_distributor d on a.DistId=d.id $where order by o.ordertime desc");
-                $totalarray1 = D("GoodsMerchantUser")->query("select count(*) as count from activity_dn97 a INNER JOIN orders_success o on (a.OrderNo=o.orderno ) left join goods_info_base b on a.activityid=b.id LEFT JOIN goods_info_item i on a.itemid=i.id left join goods_distributor d on a.DistId=d.id $where order by o.ordertime desc");
+                $totalarray1 = D("GoodsMerchantUser")->query("select count(*) as count from activity_dn97 a INNER JOIN orders_canceled o on (a.OrderNo=o.orderno or a.OrderNo=o.OrgOrderNo) left join goods_info_base b on a.activityid=b.id LEFT JOIN goods_info_item i on a.itemid=i.id left join goods_distributor d on a.DistId=d.id $where order by o.ordertime desc");
+                $totalarray = D("GoodsMerchantUser")->query("select count(*) as count from activity_dn97 a INNER JOIN orders_success o on (a.OrderNo=o.orderno ) left join goods_info_base b on a.activityid=b.id LEFT JOIN goods_info_item i on a.itemid=i.id left join goods_distributor d on a.DistId=d.id $where order by o.ordertime desc");
                 $total = $totalarray[0]["count"] + $totalarray1[0]["count"];
                 if ($offset < $totalarray[0]["count"]) {
-                    $sql = "select a.amount,a.orderno,d.`Name` as disname,a.`name`,a.contract,b.`Name` as gname,i.name as iname, i.costprice,a.takencnt,o.ordertime,o.totalmoney,a.isused from activity_dn97 a INNER JOIN orders_canceled o on (a.OrderNo=o.orderno or a.OrderNo=o.OrgOrderNo) left join goods_info_base b on a.activityid=b.id LEFT JOIN goods_info_item i on a.itemid=i.id left join goods_distributor d on a.DistId=d.id $where order by o.ordertime desc limit " . ($pageIndex - 1) * $pageSize . "," . $pageSize;
-                    $res = D("GoodsMerchantUser")->query($sql);
+                    $sql1 = "select a.TrdStatus, a.amount,a.orderno,d.`Name` as disname,a.`name`,a.contract,b.`Name` as gname,i.name as iname, i.costprice,a.takencnt,o.ordertime,o.totalmoney,a.isused from activity_dn97 a INNER JOIN orders_success o on (a.OrderNo=o.orderno) left join goods_info_base b on a.activityid=b.id LEFT JOIN goods_info_item i on a.itemid=i.id left join goods_distributor d on a.DistId=d.id $where order by o.ordertime desc  limit " . ($pageIndex - 1) * $pageSize . "," . $pageSize;
+                    $res = D("GoodsMerchantUser")->query($sql1);
                 } else {
                     $offset = $offset - $totalarray[0]["count"];
                     //交易成功
-                    $sql1 = "select a.TrdStatus, a.amount,a.orderno,d.`Name` as disname,a.`name`,a.contract,b.`Name` as gname,i.name as iname, i.costprice,a.takencnt,o.ordertime,o.totalmoney,a.isused from activity_dn97 a INNER JOIN orders_success o on (a.OrderNo=o.orderno) left join goods_info_base b on a.activityid=b.id LEFT JOIN goods_info_item i on a.itemid=i.id left join goods_distributor d on a.DistId=d.id $where order by o.ordertime desc limit " . $offset . "," . $pageSize;
-                    $res = D("GoodsMerchantUser")->query($sql1);
+                    $sql = "select a.amount,a.orderno,d.`Name` as disname,a.`name`,a.contract,b.`Name` as gname,i.name as iname, i.costprice,a.takencnt,o.ordertime,o.totalmoney,a.isused from activity_dn97 a INNER JOIN orders_canceled o on (a.OrderNo=o.orderno or a.OrderNo=o.OrgOrderNo) left join goods_info_base b on a.activityid=b.id LEFT JOIN goods_info_item i on a.itemid=i.id left join goods_distributor d on a.DistId=d.id $where order by o.ordertime desc  limit " . $offset . "," . $pageSize;
+                    $res = D("GoodsMerchantUser")->query($sql);
                 }
             }
             $data = array();

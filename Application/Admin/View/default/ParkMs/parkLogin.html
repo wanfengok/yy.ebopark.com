@@ -1,0 +1,77 @@
+
+<block name="style">
+    <title>登录页</title>
+    <link rel="stylesheet" type="text/css" href="__CSS__/globe.css">
+    <link rel="stylesheet" type="text/css" href="__CSS__/parkLogin.css">
+    <script src="__JS__/jquery-2.0.3.min.js"></script>
+</block>
+<block name="body">
+    <!--头部-->
+    <div class="loginHead">
+        <i class="icon icon-title"></i>
+    </div>
+    <!--内容-->
+    <div class="loginCont">
+        <!--图片-->
+        <div class="loginIcon">
+            <i class="icon icon-diannao"></i>
+            <div class="icon-1 shouruMsg">
+                <i class="icon icon-shouru"></i>
+                <div class="icon-msg">
+                    <span>收入摘要</span></br>
+                    <span>车场收入一目了然</span>
+                </div>
+            </div>
+            <div class="icon-1 jiankongMsg">
+                <i class="icon icon-jiankong"></i>
+                <div class="icon-msg">
+                    <span>实时监控</span></br>
+                    <span>车场状态尽在掌握</span>
+                </div>
+            </div>
+            <div class="icon-1 baobiaoMsg">
+                <i class="icon icon-baobiao"></i>
+                <div class="icon-msg">
+                    <span>数据报表</span></br>
+                    <span>数据分析探查业务</span>
+                </div>
+            </div>
+        </div>
+        <!--登录表单-->
+        <div class="loginFrom">
+            <h4>登录</h4>
+            <div class="fromInp">
+                <input type="text" placeholder="用户名">
+                <input type="password" placeholder="密码">
+                <div class="yzm">
+                    <input type="text">
+                    <img class="verifyimg reloadverify" alt={:L("_CLICK_SWITCH_WITH_DOUBLE_")} src="{:U('Public/verify')}">
+                    <!--<span class="yzmMsg" id="verifycode"  onkeypress="if(event.keyCode=='13'){_login()}"></span>-->
+                    <span class="yzmChange reloadverify">换一个</span>
+                </div>  
+            </div>
+            <div class="fromBtn">
+                <button>登录</button>
+                <p class="btnMsg">
+                    <span class="sp-1"><input type="checkbox" id="jizhu"><label for="jizhu">记住账号</label></span>
+                    <span class="sp-2">忘记密码？</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+</block>
+<block name="script">
+    <script>
+        $(function(){
+            var verifyimg = $(".verifyimg").attr("src");
+            $(".reloadverify").on("click",function(){
+                if( verifyimg.indexOf('?')>0){
+                    $(".verifyimg").attr("src", verifyimg+'&random='+Math.random());
+                }else{
+                    $(".verifyimg").attr("src", verifyimg+'?'+Math.random());
+                }
+            })
+        })
+    </script>
+</block>

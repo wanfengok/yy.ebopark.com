@@ -10,6 +10,7 @@
 return array(
 ////lpn数据库连接
     'DB_CONFIG2' => 'mysql://sa:123123@192.168.0.250:3306/eboparkplatformtest',
+    'DB_CONFIG3' => 'mysql://sa:123123@192.168.0.250:3306/virtual_account',
      /* 数据库设置 */
     'DB_TYPE' => 'mysql', // 数据库类型
     'DB_HOST' => '192.168.0.250', // 服务器地址
@@ -32,7 +33,6 @@ return array(
     'DB_BIND_PARAM' => false,// 数据库写入数据自动参数绑定
     'lpn_server_url'   => 'lpn.ebopark.com',
     'lpn_server_port'  =>'80',
-
 //    //正式环境
 //    'DB_CONFIG2' => 'mysql://lpnservice:lpn123_aBcedsAA@rdsy0x5e424zsa8rs006.mysql.rds.aliyuncs.com:3306/lpnservice',
 //    /* 数据库设置 */

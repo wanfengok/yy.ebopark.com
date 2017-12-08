@@ -1,0 +1,48 @@
+<extend name="Public/base"/>
+<block name="style">
+    <link rel="stylesheet" type="text/css" href="__CSS__/globe.css">
+    <link rel="stylesheet" href="__CSS__/jquery.treeview.css">
+    <link rel="stylesheet" type="text/css" href="__CSS__/tree.css">
+</block>
+<block name="body">
+    <div class="bodyMsg clearfix">
+        <!--树状图列表-->
+        <div id="treeList">
+            <ul id="tree" class="filetree">
+                <!--一级菜单-->
+                <li><span class="folder">系统管理</span>
+                    <ul>
+                        <!--二级菜单-->
+                        <li><span class="folder">部门管理</span></li>
+                        <li><span class="folder">岗位管理</span></li>
+                        <li><span class="folder">用户管理</span></li>
+                    </ul>
+                </li>
+                <li><span class="folder">审批流转</span>
+                    <ul>
+                        <li><span class="folder">部门管理</span></li>
+                        <li><span class="folder">岗位管理</span></li>
+                        <li><span class="folder">用户管理</span></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <!--基本信息-->
+        <div class="jbMsg">
+            <h3>基本信息</h3>
+            <div class="jsMsg-1">
+                <span>停车场编码</span>
+                <span>停车场名称</span>
+                <span>操作</span>
+            </div>
+        </div>
+    </div>
+
+</block>
+<block name="script">
+    <script src="__JS__/jquery.cookie.js"></script>
+    <script src="__JS__/jquery.treeview.js"></script>
+    <script type="text/javascript">
+        $("#tree").treeview();
+    </script>
+</block>

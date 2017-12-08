@@ -1,0 +1,850 @@
+<extend name="Public/base"/>
+<block name="style">
+    <link rel="stylesheet" type="text/css" href="__CSS__/globe.css">
+    <link rel="stylesheet" type="text/css" href="__CSS__/parkAdd.css">
+    <script src="__MODULE_STATIC__/layer/layer.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/qiniu/moxie.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/qiniu/Plupload.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/qiniu/qiniu.min.js"></script>
+    <style>
+        .setting_normal{
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 3px;
+            background: #fff;
+            border: 1px solid #00b7ee;
+            color: #00b7ee;
+        }
+        .setting_selected{
+            background: #00b7ee;
+            color:white;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 3px;
+            border: 1px solid #00b7ee;
+        }
+        span.setting_item:hover{
+            cursor:pointer;
+        }
+        .set_title{
+            border-bottom:1px dashed #cccccc;
+        }
+        .rateSetContainer{
+            margin: 10px 0px;
+        }
+        #whenAutoWay{
+            display:inline-block;
+        }
+    </style>
+</block>
+<block name="body">
+    <div class="bodyMsg">
+        <!--停车场信息-->
+        <div style="padding-left:15px;">
+            <span class="setting_item setting_selected" style="float:left;border-top-right-radius: 0px;border-bottom-right-radius: 0px;" onclick="app.parkset(this);">停车场设置</span>
+            <span style="margin-left:-1px;float:left;border-radius: 0px;" class="setting_item setting_normal" onclick="app.settlementset(this)">结算账户设置</span>
+            <span style="position:relative;margin-left:-1px;float:left;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" class="setting_item setting_normal" onclick="app.virtualAccountset(this)">车场账户设置</span>
+        </div>
+        <div style="clear:both;"></div>
+        <div id="parksetC">
+        <div class="tccMsg">
+            <div class="tcc-1">
+                <span>地域编码:</span>
+                <input type="text" class="input-1"  id="dy_bm" value="{$parkinfo['areacode']}">
+            </div>
+            <div class="tcc-1">
+                <span>车场编码</span>
+                <input type="text" class="input-1" id="js_parkbm" value="{$parkinfo['parkcode']}" readonly>
+            </div>
+            <div class="tcc-1">
+                <span>车场地址</span>
+                <input type="text" class="input-1" id="js_dz" value="{$parkinfo['parkaddr']}">
+            </div>
+            <div class="tcc-1">
+                <span>车场名称</span>
+                <input type="text" class="input-1" id="js_name" value="{$parkinfo['parkname']}">
+            </div>
+            <div class="tcc-1">
+                <span>所在城市</span>
+                <input type="text" class="input-1" id="js_city" value="{$parkinfo['city']}">
+            </div>
+            <div class="tcc-1">
+                <span>企业名称:</span>
+                <input type="text" class="input-1" id="js_companyname" value="{$parkinfo['parkcompany']}"/>
+            </div>
+            <div class="tcc-1">
+                <span>时段月租截止日期</span>
+                <input type="text" class="input-1" value="{$parkinfo['fixlimttime']}" id="monthlyEndDate">
+            </div>
+            <div class="tcc-1" >
+                <span>车场图片:</span>
+                <input type="text" class="input-2" id="parkpic" value="{$parkinfo['imgurl']}"/>
+                <button class="btn-send" style="display:inline-block;" id="parkpicbtn">上传</button>
+            </div>
+            <div class="tcc-1">
+                <span>CAD文件:</span>
+                <input type="text" class="input-2" id="parkcad" value="{$parkinfo['cadurl']}"/>
+                <button class="btn-send" style="display:inline-block;" id="parkcadbtn">上传</button>
+            </div>
+            <div class="tcc-1">
+                <span>停车场类别</span>
+                <input type="text" readonly >
+            </div>
+            <div class="tcc-1">
+                <span>停车场类型</span>
+                <input type="text" readonly >
+            </div>
+            <div class="tcc-1">
+                <span>总车位数</span>
+                <input type="text" readonly >
+            </div>
+            <div class="tcc-1">
+                <span>对外经营泊位数</span>
+                <input type="text" readonly >
+            </div>
+            <div class="tcc-1">
+                <span>预约泊位</span>
+                <input type="text" readonly >
+            </div>
+            <div class="tcc-1">
+                <span>进口数</span>
+                <input type="text" readonly >
+            </div>
+            <div class="tcc-1">
+                <span>出口数</span>
+                <input type="text" readonly >
+            </div>
+
+            </br>
+
+        </div>
+        <!--经营者信息-->
+        <h3>经营者信息</h3>
+        <div class="jjzMsg">
+            <div class="jjz-1">
+                <span>经营者</span>
+                <input type="text" value="{$parkinfo['parkoperator']}" id="manager">
+            </div>
+            <div class="jjz-1">
+                <span>停车场状态</span>
+                <select  id="parkStatus">
+                    <option value="1" {$parkinfo['parkstatus']==1?"selected":""}>启用</option>
+                    <option value="0" {$parkinfo['parkstatus']==0?"selected":""}>不启用</option>
+                </select>
+            </div>
+            <div class="jjz-1">
+                <span>在线状态</span>
+                <span></span>
+            </div>
+            <div class="jjz-2">
+                <span>联系人信息:</span>
+
+                <textarea class="divTxt"  id="contractInfo">{$parkinfo['parktel']}</textarea>
+                <span style="color:#cccccc;">(姓名,职位,电话)</span>
+            </div>
+        </div>
+        <!--停车场配置-->
+        <h3>停车场配置</h3>
+        <div class="ttcPz tccMsg">
+            <div class="title">
+                <div>
+                    <input type="checkbox" id="yzybrz" {$parkinfo['fixaccred']==1?"checked=checked":""}>
+                    <label for="yzybrz">月租认证</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="lytc" {$parkinfo['tmppayconfirm']==1?"checked=checked":""}>
+                    <label for="lytc">0元弹窗</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="yzhy" {$parkinfo['ismember']==1?"checked=checked":""}>
+                    <label for="yzhy">月租会员</label>
+                </div>
+            </div>
+        </div>
+        <div style="border:1px #cccccc dashed;margin-top:20px;"></div>
+        <button class="btn-send" id="send" style="width:90px; height:40px;margin-top:20px;">提交</button>
+        </div>
+        <!--结算配置-->
+        <div id="settlementC" style="padding-left:15px;display:none;">
+            <h3 class="set_title">结算账户</h3>
+            <div class="tccMsg">
+                <div class="tcc-1">
+                    <span>收款人:</span>
+                    <input type="text" class="input-1"  value="{$accountinfo['name']}" id="Name">
+                </div>
+                <div class="tcc-1">
+                    <span>银行卡号:</span>
+                    <input type="text" class="input-1" value="{$accountinfo['bankaccount']}" id="BankAccount">
+                </div>
+                <div class="tcc-1">
+                    <span>开户行:</span>
+                    <input type="text" class="input-1" value="{$accountinfo['bankname']}" id="BankName">
+                </div>
+                <div class="tcc-1">
+                    <span>开户行行号:</span>
+                    <input type="text" class="input-1" value="{$accountinfo['bankno']}" id="BankNo">
+                </div>
+                <div class="tcc-1">
+                    <span>开户行地址:</span>
+                    <input type="text" class="input-1"  value="{$accountinfo['bankaddress']}" id="BankAddress">
+                </div>
+
+                <div class="tcc-1">
+                    <span>是否跨行:</span>
+                    <select id="ExternBank">
+                        <option value="0" {$$accountinfo['externbank']==0?"selected":""}>不跨行</option>
+                        <option value="1" {$$accountinfo['externbank']==1?"selected":""}>跨行</option>
+                    </select>
+                </div>
+                <div class="tcc-1" style="width:100%;">
+                    <span>备注:</span>
+                    <textarea type="text" class="input-1"  id="Remark">{$accountinfo['remark']}</textarea>
+                </div>
+
+                </div>
+            <h3 class="set_title">结算费率</h3>
+            <div class="tccMsg">
+            <div class="jjz-1 rateSetContainer">
+                <span>临停结算费率(%):</span>
+                <select id="parkfeerate" class="rateSelect" style="margin-left:39px;">
+                    <option value="0">统一费率</option>
+                    <option value="1">渠道费率</option>
+                </select>
+                <input type="text" class="input-1 sameRate" value="" style="width:60px;"/>
+                <span class="rateDetail" style="display:none;">
+                    <span><label>支付宝费率(%)</label> <input type="text" class="input-1 alipayRate" value="" style="width:60px;"/></span>
+                    <span><label>微信费率(%)</label> <input type="text" class="input-1 wxRate" value="" style="width:60px;"/></span>
+                    <span><label>其他费率(%)</label> <input type="text" class="input-1 otherRate" value="" style="width:60px;"/></span>
+                    <span><label>银联费率(%)</label> <input type="text" class="input-1 unionPayRate" value="" style="width:60px;"/></span>
+                </span>
+            </div>
+            <div class="jjz-1 rateSetContainer">
+                <span>月租结算费率(%):</span>
+                <select id="monthlyrate" class="rateSelect"  style="margin-left:39px;">
+                    <option value="0">统一费率</option>
+                    <option value="1">渠道费率</option>
+                </select>
+                <input type="text" class="input-1 sameRate" value="" style="width:60px;"/>
+                <span class="rateDetail" style="display:none;">
+                    <span><label>支付宝费率(%)</label> <input type="text" class="input-1 alipayRate" value="" style="width:60px;"/></span>
+                    <span><label>微信费率(%)</label> <input type="text" class="input-1 wxRate" value="" style="width:60px;"/></span>
+                    <span><label>其他费率(%)</label> <input type="text" class="input-1 otherRate" value="" style="width:60px;"/></span>
+                    <span><label>银联费率(%)</label> <input type="text" class="input-1 unionPayRate" value="" style="width:60px;"/></span>
+                </span>
+            </div>
+            <div class="jjz-1 rateSetContainer">
+                <span>时段月租及超时费率(%):</span>
+                <select id="freemonthlyrate" class="rateSelect">
+                    <option value="0">统一费率</option>
+                    <option value="1">渠道费率</option>
+                </select>
+                <input type="text" class="input-1 sameRate" value="" style="width:60px;"/>
+                <span class="rateDetail" style="display:none;">
+                    <span><label>支付宝费率(%)</label> <input type="text" class="input-1 alipayRate" value="" style="width:60px;"/></span>
+                    <span><label>微信费率(%)</label> <input type="text" class="input-1 wxRate" value="" style="width:60px;"/></span>
+                    <span><label>其他费率(%)</label> <input type="text" class="input-1 otherRate" value="" style="width:60px;"/></span>
+                    <span><label>银联费率(%)</label> <input type="text" class="input-1 unionPayRate" value="" style="width:60px;"/></span>
+                </span>
+            </div>
+            </div>
+            <h3 class="set_title">月租分成比例</h3>
+            <div class="tccMsg ">
+            <div class="tcc-1">
+                <span style="width:160px;">闲时月租分成比例(%):</span>
+                <input type="text" class="input-1" value="{$freefee}" id="freefee">
+            </div>
+            <div class="tcc-1">
+                <span style="width:160px;">忙时月租分成比例(%):</span>
+                <input type="text" class="input-1" value="{$busyfee}" id="busyfee">
+            </div>
+            <div class="tcc-1">
+                <span style="width:160px;">闲时月租超时分成比例(%):</span>
+                <input type="text" class="input-1" value="{$overfreefee}" id="overfreefee">
+            </div>
+            <div class="tcc-1">
+                <span style="width:160px;">忙时月租超时分成比例(%):</span>
+                <input type="text" class="input-1" value="{$overbusyfee}" id="overbusyfee">
+            </div>
+            <div class="tcc-1" style="display:none;">
+                <span style="width:160px;">月租会员分成比例(%):</span>
+                <input type="text" class="input-1" value="{$memberfee}" id="memberfee">
+            </div>
+            </div>
+
+            <div style="border:1px #cccccc dashed;margin-top:20px;"></div>
+            <button class="btn-send" id="accountInfo" style="width:90px; height:40px;margin-top:20px;">提交</button>
+        </div>
+        <div id="virtualAccountC" class="tccMsg" style="padding-left:15px;display:none;">
+            <h3 class="set_title">车场账号</h3>
+            <div class="tcc-1">
+                <span>是否开启:</span>
+                <select id="isOpen">
+                    <option value="0" >不开启</option>
+                    <option value="1" >开启</option>
+                </select>
+            </div>
+
+            <div class="tcc-1">
+                <span>使用银行:</span>
+                <select id="ChoosedBank">
+                    <option value="1" >民生银行</option>
+                    <option value="2" >招商银行</option>
+                </select>
+            </div>
+            <br/>
+            <div class="jjz-1">
+                <span>提现方式:</span>
+                <select id="IsAuto">
+                    <option value="0" >手动提现</option>
+                    <option value="1" >自动提现</option>
+                </select><div style="display:none;" id="whenAutoWay">
+                &nbsp;&nbsp;&nbsp;,&nbsp;&nbsp;&nbsp;每
+                <select id="NewScheduledWay" style="">
+                    <option value="2" >月</option>
+                    <option value="1" >周</option>
+                    <option value="0" >天</option>
+                </select>
+                <select id="daySelect">
+                    <option value="1">1号</option>
+                    <option value="2">2号</option>
+                    <option value="3">3号</option>
+                    <option value="4">4号</option>
+                    <option value="5">5号</option>
+                    <option value="6">6号</option>
+                    <option value="7">7号</option>
+                    <option value="8">8号</option>
+                    <option value="9">9号</option>
+                    <option value="10">10号</option>
+                    <option value="11">11号</option>
+                    <option value="12">12号</option>
+                    <option value="13">13号</option>
+                    <option value="14">14号</option>
+                    <option value="15">15号</option>
+                    <option value="16">16号</option>
+                    <option value="17">17号</option>
+                    <option value="18">18号</option>
+                    <option value="19">19号</option>
+                    <option value="20">20号</option>
+                    <option value="21">21号</option>
+                    <option value="22">22号</option>
+                    <option value="23">23号</option>
+                    <option value="24">24号</option>
+                    <option value="25">25号</option>
+                    <option value="26">26号</option>
+                    <option value="27">27号</option>
+                    <option value="28">28号</option>
+                    <option value="29">月末</option>
+                </select>
+                <select id="weekSelect" style="display:none;">
+                    <option value="1">星期一</option>
+                    <option value="2">星期二</option>
+                    <option value="3">星期三</option>
+                    <option value="4">星期四</option>
+                    <option value="5">星期五</option>
+                </select>
+                    <input type="checkbox" id="AllowManual" checked style="width:20px;"}>
+                    <label for="yzybrz">启用手动提现</label>
+            </div>
+            </div>
+            <br/>
+            <div class="tcc-1">
+                <span>优惠券存量:</span>
+                <input type="text" class="input-1" value="" id="LeftCouponMoney">
+            </div>
+            <div class="tcc-1">
+                <span>财务联系人:</span>
+                <input type="text" class="input-1" value="" id="FinanceName">
+            </div>
+            <div class="tcc-1">
+                <span>财务电话:</span>
+                <input type="text" class="input-1" value="" id="Telephone">
+            </div>
+            <div style="border:1px #cccccc dashed;margin-top:20px;"></div>
+            <button class="btn-send" id="virtualaccountbtn" style="width:90px; height:40px;margin-top:20px;">提交</button>
+        </div>
+    </div>
+</block>
+<block name="script">
+    <link rel="stylesheet" href="__MODULE_STATIC__/jedate/skin/jedate.css"/>
+    <script type="text/javascript" src="__MODULE_STATIC__/jedate/jedate.js"></script>
+    <script>
+        var rateinfo ={$rateinfo};
+        var virtualAccountInfo={$virtualAccountInfo};
+        var _id={$id};
+        var _parkcode="{$parkinfo['parkcode']}";
+        var ii=null;
+        var app = {
+            currentpage:1,
+            initListener: function () {
+                $("#send").on("click", function () {
+                    app.submit();
+                });
+                jeDate({
+                    dateCell: "#monthlyEndDate",
+                    isinitVal: false,
+                    isTime: true,
+                    format:"YYYY-MM-DD"
+                });
+            },
+            initQiniu: function () {
+                $.getJSON('./getQiNiuKey', function (data) {
+                    if (data.state == 0) {
+                        var key = data.result;
+                        app.initUploader(key, 'parkpic');
+                        app.initUploader(key, 'parkcad');
+
+                    }
+                });
+            },
+            initUploader: function initUploader(key, id) {
+                var cpts = Qiniu.uploader({
+                    runtimes: 'html5,flash,html4',      // 上传模式,依次退化
+                    browse_button: id + 'btn',         // 上传选择的点选按钮，**必需**
+                    uptoken: key, // uptoken 是上传凭证，由其他程序生成
+                    get_new_uptoken: false,             // 设置上传文件的时候是否每次都重新获取新的 uptoken
+                    unique_names: true,              // 默认 false，key 为文件名。若开启该选项，JS-SDK 会为每个文件自动生成key（文件名）
+                    domain: '7xpcl7.com2.z0.glb.qiniucdn.com',
+                    //domain:'7xodpu.com1.z0.glb.clouddn.com',//test
+                    max_file_size: '100mb',             // 最大文件体积限制
+                    flash_swf_url: '__PUBLIC__/js/qubuy/Moxie.swf',  //引入 flash,相对路径
+                    max_retries: 3,                     // 上传失败最大重试次数
+                    chunk_size: '4mb',                  // 分块上传时，每块的体积
+                    auto_start: true,                   // 选择文件后自动上传，若关闭需要自己绑定事件触发上传,
+                    init: {
+                        'FilesAdded': function (up, files) {
+                            plupload.each(files, function (file) {
+                                // 文件添加进队列后,处理相关的事情
+                            });
+                        },
+                        'BeforeUpload': function (up, file) {
+                            // 每个文件上传前,处理相关的事情
+                            ii=  layer.msg('上传中……');
+                        },
+                        'UploadProgress': function (up, file) {
+                            // 每个文件上传时,处理相关的事情
+                        },
+                        'FileUploaded': function (up, file, info) {
+
+                            var res = JSON.parse(info);
+                            var imgkey = res.key;
+                            var src = "http://7xpcl7.com2.z0.glb.qiniucdn.com/" + res.key;
+                            $("#" + id).val(src);
+                        },
+                        'Error': function (up, err, errTip) {
+                            //上传出错时,处理相关的事情
+                        },
+                        'UploadComplete': function () {
+                            //队列文件处理完毕后,处理相关的事情
+                            layer.close(ii);
+                        },
+                        'Key': function (up, file) {
+                            var key = "";
+                            return key
+                        }
+                    }
+                });
+            },
+            init: function () {
+                this.initListener();
+                this.initQiniu();
+            },
+            //提交表单
+            submit: function () {
+
+                var dy_bm = $.trim($("#dy_bm").val());
+                var js_parkbm = $.trim($("#js_parkbm").val());
+                var _dz = $.trim($("#js_dz").val());
+                var _name = $.trim($("#js_name").val());
+                var _city = $.trim($("#js_city").val());
+                var js_companyname=$.trim($("#js_companyname").val());
+                var monthlyEndDate=$.trim($("#monthlyEndDate").val());
+                var parkpic= $.trim($("#parkpic").val());
+                var parkcad=$.trim($("#parkcad").val());
+
+                var parkStatus=$.trim($("#parkStatus").val());
+                var manager=$.trim($("#manager").val());
+                var contractInfo=$.trim($("#contractInfo").val());
+
+                var yzybrz=$("#yzybrz").prop('checked');
+                var lytc=$("#lytc").prop('checked');
+                var yzhy=$("#yzhy").prop('checked');
+
+
+                if(dy_bm==""||js_parkbm==""||_dz==""||_name==""||_city==""){
+                    layer.alert("请填写完整信息");
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/index.php/Admin/ParkMs/updateParkinglot",
+                    dataType: "json",
+                    data:{
+                        //地域编码
+                        id:_id,
+                        bm:dy_bm,
+                        parkbm:js_parkbm,
+                        dz:_dz,
+                        name:_name,
+                        city:_city,
+                        companyname:js_companyname,
+                        monthlyEndDate:monthlyEndDate,
+                        parkpic:parkpic,
+                        parkcad:parkcad,
+                        parkStatus:parkStatus,
+                        manager:manager,
+                        contractInfo:contractInfo,
+                        yzybrz:yzybrz==true?1:0,
+                        lytc:lytc==true?1:0,
+                        yzhy:yzhy==true?1:0
+                    },
+                    success: function (msg) {
+                        if (msg.state == -1) {
+                            layer.msg(msg.desc);
+                            return;
+                        }
+//                        layer.alert("修改成功",function(){
+//                            window.location.href = "/index.php/Admin/ParkMs/parkingLot.html"
+//                        });
+                        layer.alert("操作成功!",function(){
+                            window.location.reload(true);
+                        });
+                    },
+                    error: function () {
+                        console.log("失败")
+                    }
+                })
+            },
+            //停车场设置
+            parkset:function(_self){
+//                setting_normal setting_selected
+                $(".setting_item").removeClass("setting_normal").removeClass("setting_selected").addClass("setting_normal");
+                $(_self).removeClass("setting_normal").addClass("setting_selected");
+                this.currentpage=1;
+               $("#parksetC").show();
+                $("#settlementC").hide();
+                $("#virtualAccountC").hide();
+            },
+            settlementset:function(_self){
+                $(".setting_item").removeClass("setting_normal").removeClass("setting_selected").addClass("setting_normal");
+                $(_self).removeClass("setting_normal").addClass("setting_selected");
+                this.currentpage=2;
+                $("#parksetC").hide();
+                $("#settlementC").show();
+                $("#virtualAccountC").hide();
+            },
+            virtualAccountset:function(_self){
+                $(".setting_item").removeClass("setting_normal").removeClass("setting_selected").addClass("setting_normal");
+                $(_self).removeClass("setting_normal").addClass("setting_selected");
+                this.currentpage=3;
+                $("#parksetC").hide();
+                $("#settlementC").hide();
+                $("#virtualAccountC").show();
+            },
+
+
+        }
+        var rateSetPage={
+            initListener:function(){
+
+                $("#accountInfo").on("click",function(){
+                    rateSetPage.update();
+                });
+                $(".rateSelect").on("change",function(){
+                    var val=$(this).val();
+                    var parent= $(this).parent(".rateSetContainer");
+                    if(val==0){
+                        $(parent).find(".sameRate").show();
+                        $(parent).find(".rateDetail").hide();
+                    }else{
+                        $(parent).find(".sameRate").hide();
+                        $(parent).find(".rateDetail").show();
+                    }
+                })
+            },
+            initRate:function(){
+                    if(rateinfo.length==0){
+                        return;
+                    }
+                //临停费率
+                for(var index=0;index<rateinfo.length;index++){
+                    var item=rateinfo[index];
+                    switch (Number(item.allowedpurpose)){
+                        case 1:this.initRateDetail("parkfeerate",item);break;
+                        case 20:this.initRateDetail("monthlyrate",item);break;
+                        case 50:this.initRateDetail("freemonthlyrate",item);break;
+                    }
+                }
+
+            },
+
+            init:function(){
+                this.initListener();
+                this.initRate();
+            },
+            initRateDetail:function(_id,item){
+                var WeiXinRate=Number(item.weixinrate).toFixed(2);
+                var AlipayRate=Number(item.alipayrate).toFixed(2);
+                var UnionpayRate=Number(item.unionpayrate).toFixed(2);
+                var OtherRate=Number(item.otherrate).toFixed(2);
+                var selectObj=$("#"+_id);
+                if(WeiXinRate==AlipayRate&&AlipayRate==UnionpayRate&&UnionpayRate==OtherRate){
+                    $(selectObj).val(0);
+                    $(selectObj).parent(".rateSetContainer").find(".sameRate").eq(0).val(AlipayRate==0?"":AlipayRate);
+                }else{
+                    $(selectObj).val(1);
+                    var parent= $(selectObj).parent(".rateSetContainer");
+                    $(parent).find(".sameRate").hide();
+                    $(parent).find(".rateDetail").show();
+                }
+                $(selectObj).parent(".rateSetContainer").find(".alipayRate").eq(0).val(AlipayRate==0?"":AlipayRate);
+                $(selectObj).parent(".rateSetContainer").find(".wxRate").eq(0).val(WeiXinRate==0?"":WeiXinRate);
+                $(selectObj).parent(".rateSetContainer").find(".otherRate").eq(0).val(OtherRate==0?"":OtherRate);
+                $(selectObj).parent(".rateSetContainer").find(".unionPayRate").eq(0).val(UnionpayRate==0?"":UnionpayRate);
+            },
+            getRateStr:function(_id){
+                var selectObj=$("#"+_id);
+                var val=$(selectObj).val();
+                if(val==0){
+                    var rate= $.trim($(selectObj).parent(".rateSetContainer").find(".sameRate").eq(0).val());
+                    return rate==""?0:rate;
+                }
+                var alipayRate= $.trim($(selectObj).parent(".rateSetContainer").find(".alipayRate").eq(0).val());
+                var wxRate=$.trim($(selectObj).parent(".rateSetContainer").find(".wxRate").eq(0).val());
+                var otherRate=$.trim($(selectObj).parent(".rateSetContainer").find(".otherRate").eq(0).val());
+                var unionPayRate=$.trim($(selectObj).parent(".rateSetContainer").find(".unionPayRate").eq(0).val());
+                alipayRate=alipayRate==""?0:alipayRate;
+                wxRate=wxRate==""?0:wxRate;
+                otherRate=otherRate==""?0:otherRate;
+                unionPayRate=unionPayRate==""?0:unionPayRate;
+                return  alipayRate+"_"+wxRate+"_"+otherRate+"_"+unionPayRate;
+
+
+            },
+            update:function(){
+                //账户基本信息
+                var _Name= $.trim($("#Name").val())
+                var _BankAccount= $.trim($("#BankAccount").val())
+                var _BankName= $.trim($("#BankName").val())
+                var _BankNo= $.trim($("#BankNo").val())
+                var _BankAddress= $.trim($("#BankAddress").val())
+                var _Remark= $.trim($("#Remark").val())
+                var _ExternBank= $.trim($("#ExternBank").val())
+                var _Remark=$.trim($("#Remark").val())
+
+
+                var _freefee= $.trim($("#freefee").val());
+                var _busyfee= $.trim($("#busyfee").val());
+                var _overfreefee= $.trim($("#overfreefee").val());
+                var _overbusyfee= $.trim($("#overbusyfee").val());
+                var _memberfee= $.trim($("#memberfee").val());
+
+                //费率设置
+                var parkfeeRate=this.getRateStr("parkfeerate");
+                var monthlyrate=this.getRateStr("monthlyrate");
+                var freemonthlyrate=this.getRateStr("freemonthlyrate");
+
+                if(_Name==""){
+                    layer.alert("收款人不能为空!");
+                    return;
+                }
+                if(_BankAccount==""){
+                    layer.alert("银行卡号不能为空!");
+                    return;
+                }
+                if(_BankName==""){
+                    layer.alert("开户行不能为空!");
+                    return;
+                }
+                if(_BankNo==""){
+                    layer.alert("开户行行号不能为空!");
+                    return;
+                }
+                if(_BankAddress==""){
+                    layer.alert("开户行地址不能为空!");
+                    return;
+                }
+                if(_freefee!=""&&isNaN(Number(_freefee))){
+                    layer.alert("闲时月租分成比例格式错误!");
+                    return;
+                }
+                if(_busyfee!=""&&isNaN(Number(_busyfee))){
+                    layer.alert("忙时月租分成比例格式错误!");
+                    return;
+                }
+                if(_overfreefee!=""&&isNaN(Number(_overfreefee))){
+                    layer.alert("闲时月租超时分成比例格式错误!");
+                    return;
+                }
+                if(_overbusyfee!=""&&isNaN(Number(_overbusyfee))){
+                    layer.alert("忙时月租超时分成比例格式错误!");
+                    return;
+                }
+                if(_memberfee!=""&&isNaN(Number(_memberfee))){
+                    layer.alert("月租会员分成比例格式错误!");
+                    return;
+                }
+
+                var ii=layer.msg("加载中……");
+                $.ajax({
+                    type:"POST",
+                    url:"./updateParkAccountInfo?freefee="+_freefee+"&busyfee="+_busyfee+"&overfreefee="+_overfreefee+"&overbusyfee="+_overbusyfee+"&memberfee="+_memberfee+"&parkfeeRate="+parkfeeRate+"&monthlyrate="+monthlyrate+"&freemonthlyrate="+freemonthlyrate,
+                    dataType:"json",
+                    data:{
+                        Name:_Name,
+                        BankAccount:_BankAccount,
+                        BankName:_BankName,
+                        BankNo:_BankNo,
+                        BankAddress:_BankAddress,
+                        Remark:_Remark,
+                        ExternBank:_ExternBank,
+                        LocalFlag:2,
+                        ParkID:_parkcode,
+                        Remark:_Remark,
+                    },
+                    success:function(res){
+                        layer.close(ii);
+                        if(res.state!=0){
+                            layer.alert(res.desc);
+                            return;
+                        }
+                        layer.alert("操作成功!",function(){
+                            window.location.reload(true);
+                        });
+                    },
+                    error: function () {
+                        console.log("失败")
+                    }
+
+                });
+
+
+            }
+        };
+        var virtualAccountPage={
+            init:function(){
+                this.initListener();
+                this.initPage();
+            },
+            initPage:function(){
+                if(virtualAccountInfo==""){
+                    return;
+                }
+                $("#isOpen").val(virtualAccountInfo.opentime=="2099-01-01 00:00:00"?0:1);
+                $("#ChoosedBank").val(virtualAccountInfo.choosedbank);
+                $("#IsAuto").val(virtualAccountInfo.isauto);
+                virtualAccountInfo.isauto==1?$("#whenAutoWay").show():$("#whenAutoWay").hide();
+
+                $("#NewScheduledWay").val(virtualAccountInfo.newscheduledway);
+                if(virtualAccountInfo.newscheduledway==2){
+                    $("#daySelect").val(virtualAccountInfo.newautotransferinterval);
+                    $("#daySelect").show();
+                    $("#weekSelect").hide();
+                }else if(virtualAccountInfo.newscheduledway==1){
+                    $("#weekSelect").val(virtualAccountInfo.newautotransferinterval);
+                    $("#daySelect").hide();
+                    $("#weekSelect").show();
+                }else{
+                    $("#daySelect").hide();
+                    $("#weekSelect").hide();
+                }
+                if(virtualAccountInfo.allowmanual==1){
+                    $("#AllowManual").prop('checked',"checked");
+                }else{
+                    $("#AllowManual").removeAttr("checked");
+                }
+                $("#LeftCouponMoney").val(Number(virtualAccountInfo.leftcouponmoney).toFixed(0));
+                $("#FinanceName").val(virtualAccountInfo.financename);
+                $("#Telephone").val(virtualAccountInfo.telephone);
+
+            },
+            initListener:function(){
+
+                $("#IsAuto").on("change",function(){
+                    var isauto=$(this).val();
+                    isauto==1?$("#whenAutoWay").show():$("#whenAutoWay").hide();
+                });
+                $("#NewScheduledWay").on("change",function(){
+                    var NewScheduledWay=$(this).val();
+                    if(NewScheduledWay==2){
+                        $("#daySelect").show();
+                        $("#weekSelect").hide();
+                    }else if(NewScheduledWay==1){
+                        $("#daySelect").hide();
+                        $("#weekSelect").show();
+                    }else{
+                        $("#daySelect").hide();
+                        $("#weekSelect").hide();
+                    }
+                });
+                $("#virtualaccountbtn").on("click",function(){
+                    virtualAccountPage.submit();
+                });
+            },
+            submit:function(){
+                var  isOpen=$("#isOpen").val();
+                var ChoosedBank=$("#ChoosedBank").val();
+                var IsAuto=$("#IsAuto").val();
+                var NewScheduledWay=$("#NewScheduledWay").val();
+                var daySelect=$("#daySelect").val();
+                var weekSelect=$("#weekSelect").val();
+                var AllowManual=$("#AllowManual").prop('checked');
+                var LeftCouponMoney= $.trim($("#LeftCouponMoney").val());
+                var FinanceName= $.trim($("#FinanceName").val());
+                var Telephone= $.trim($("#Telephone").val());
+                var data={};
+                if(LeftCouponMoney!=""&&isNaN(Number(LeftCouponMoney))){
+                    layer.alert("请填写格式正确的优惠券存量");
+                    return;
+                }
+                if(FinanceName==""){
+                    layer.alert("财务联系人不能为空!");
+                    return;
+                }
+                if(Telephone==""){
+                    layer.alert("财务电话不能为空!");
+                    return;
+                }
+                data.isOpen=isOpen;
+                data.ChoosedBank=ChoosedBank;
+                data.IsAuto=IsAuto;
+                data.NewScheduledWay=NewScheduledWay;
+                data.daySelect=daySelect;
+                data.weekSelect=weekSelect;
+                data.AllowManual=AllowManual?1:0;
+                data.LeftCouponMoney=LeftCouponMoney;
+                data.FinanceName=FinanceName;
+                data.Telephone=Telephone;
+                data.ParkID=_parkcode;
+                var ii =layer.msg("操作中……");
+                $.ajax({
+                    type:"POST",
+                    url:"./updateVirtualAccountInfo",
+                    dataType:"json",
+                    data:data,
+                    success:function(res){
+                        layer.close(ii);
+                        if(res.state!=0){
+                            layer.alert(res.desc);
+                            return;
+                        }
+                        layer.alert("操作成功!",function(){
+                            window.location.reload(true);
+                        });
+                    },
+                    error: function () {
+                        console.log("失败")
+                    }
+
+                });
+
+
+
+            }
+
+
+        };
+        app.init();
+        rateSetPage.init();
+        virtualAccountPage.init();
+    </script>
+</block>

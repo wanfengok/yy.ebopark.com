@@ -1,0 +1,267 @@
+body{
+    min-width: 1300px;
+    overflow: scroll;
+}
+.bodyMsg h3{
+    margin: 20px 0;
+}
+.tccMsg{
+    min-width: 800px;
+    overflow: scroll;
+    margin-top: 20px;
+    padding: 0 15px;
+}
+.tccMsg .tcc-1{
+    display: inline-block;
+    width: 33%;
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+.tccMsg .tcc-1 span{
+    display: inline-block;
+    width: 90px;
+}
+.tccMsg .tcc-1 input{
+    border: 1px solid #cccccc;
+    border-radius: 3px;
+    padding-left: 15px;
+    background: #cccccc;
+    width: 160px;
+}
+.tccMsg .tcc-1 .input-1{
+    background: #fff;
+    border: 1px solid #cccccc;
+    width: 200px;
+    padding-left: 12px;
+    border-radius: 5px;
+}
+.tccMsg .tcc-1 .input-2{
+    background: #fff;
+    display: inline-block;
+    padding: 0;
+    border: 1px solid #cccccc;
+    width: 200px;
+    padding-left: 12px;
+    border-radius: 5px;
+}
+.tccMsg .tcc-1 a{
+    display: inline-block;
+    margin-left:12px;
+    color: #00b7ee;
+}
+/*经营者信息*/
+.jjzMsg {
+    padding: 0 15px;
+    margin-top: 20px;
+}
+.jjzMsg .jjz-1{
+    width: 33%;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+.jjzMsg .jjz-1 span{
+    display: inline-block;
+}
+.jjzMsg input{
+    border: 1px solid #cccccc;
+    background: #fff;
+    border-radius: 3px;
+    padding-left: 15px;
+    width: 160px;
+}
+.jjzMsg select{
+    border: 1px solid #cccccc;
+    background: #fff;
+    border-radius: 3px;
+    width: 80px;
+}
+.jjzMsg .jjz-2 span{
+    display: inline-block;
+    height:50px;
+    line-height:50px;
+}
+.jjzMsg .jjz-2 .divTxt{
+    width: 300px;
+    border: 1px solid #cccccc;
+    display: inline-block;
+    height: 50px;
+    padding: 6px;
+    overflow: scroll;
+}
+/*结算账号信息*/
+.jszhMsg{
+    padding: 0 15px;
+    margin-top: 20px;
+}
+.jszhMsg p{
+    margin: 10px 0;
+}
+.jszhMsg .jszh-1{
+    display: inline-block;
+    width: 33%;
+    margin-bottom: 20px;
+}
+.jszhMsg .jszh-1 span{
+    display: inline-block;
+    width: 165px;
+}
+.jszhMsg .jszh-1 input{
+    border: 1px solid #cccccc;
+    border-radius: 3px;
+    padding-left: 15px;
+    background: #cccccc;
+    width: 160px;
+}
+.jszhMsg .jszh-1 .input-1{
+    border: 1px solid #00b7ee;
+    background: #fff;
+    border-radius: 3px;
+    padding-left: 6px;
+    width: 160px;
+}
+.jszhMsg .jszh-1 select{
+    max-width: 160px;
+}
+.jszhMsg p{
+    padding-left: 24px;
+    color: #00b7ee;
+    font-size: 14px;
+}
+/*停车场配置*/
+.ttcPz{
+    display: flex;
+    padding:0 15px;
+    margin-top: 20px;
+    font-size: 13px;
+}
+.ttcPz .name{
+    width: 200px;
+}
+.ttcPz .title div{
+    display: inline-block;
+    margin-right: 24px;
+    width: 120px;
+}
+.ttcPz .title button{
+    background: #00b7ee;
+    color: #fff;
+    font-size: 14px;
+    height:25px;
+    line-height: 25px;
+    padding: 0 6px;
+    text-align: center;
+    border: 0;
+}
+.ttcPz .title input{
+}/*管理员列表*/
+.glyList table{
+    width: 40%;
+    text-align: center;
+    color: #000000;
+}
+.glyList table thead{
+    background: #e9e9e9;
+}
+.glyList table thead {
+    height:25px;
+    line-height:25px;
+    color: #00b7ee;
+}
+/*支付弹窗*/
+.Mask{
+    position: fixed;
+    width: 100%;
+    height:100%;
+    background: rgba(0,0,0,0.5);
+    top:0;
+    left:0;
+    z-index: 20;
+}
+.zfMask{
+    background: #fff;
+    border: 1px solid #00b7ee;
+    width: 700px;
+    height:500px;
+    margin: 80px auto;
+    border-radius: 12px;
+}
+.zfMask h5{
+    height: 40px;
+    line-height:40px;
+    padding: 0 16px;
+    border-bottom: 1px solid #00b7ee;
+    margin-top: 0!important;
+}
+.Mask .icon-error{
+    background-image: url("../images/cuowu.png");
+    width: 40px;
+    height:40px;
+    display: inline-block;
+    background-size: 16px 16px;
+    float: right;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.zfMask .zfMsg{
+    padding: 0 24px;
+    font-size: 13px;
+}
+.zfMask .zfMsg div{
+    width: 49%;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+.zfMask .zfMsg span{
+    display: inline-block;
+    width: 120px;
+}
+.zfMask input{
+    width: 150px;
+    border: 1px solid #00b7ee;
+    border-radius: 5px;
+    padding-left: 6px;
+}
+.zfMask select{
+    width: 150px;
+    border: 1px solid #00b7ee;
+    border-radius: 5px;
+}
+.zfMask .more{
+    display: block!important;
+    width: 100%!important;
+}
+.zfMask .more div{
+    border: 1px solid #00b7ee;
+    padding: 6px;
+    height: 120px;
+    width: 60%;
+}
+.zfMask button{
+    margin-top:20px;
+    width: 80px;
+    height:40px;
+    background: #00b7ee;
+    border: 0;
+    color: #fff;
+    font-size: 15px;
+    line-height:15px;
+    border-radius: 12px;
+    position: relative;
+    left: 50%;
+    margin-left: -20px;
+}
+.btn-send{
+    margin: 0 auto;
+    display: block;
+    padding: 0 12px;
+    border-radius: 3px;
+    background: #fff;
+    border: 1px solid #00b7ee;
+    color: #00b7ee;
+}
+.btn-send:hover{
+    background: #00b7ee;
+    color: #fff;
+    border: 1px solid #00b7ee;
+    font-weight: inherit;
+}

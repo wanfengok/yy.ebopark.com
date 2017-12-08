@@ -5,14 +5,12 @@
  * Date: 16/8/2
  * Time: 上午9:12
  */
-
 namespace Admin\Model;
-
-
 use Think\Model;
-
 class ParkinfoModel extends Model
 {
+
+
     protected $connection = 'DB_CONFIG2';
     protected $trueTableName = 'parkinfo';
 
@@ -96,4 +94,15 @@ class ParkinfoModel extends Model
 
 
     }
+    public function getParkCodeAndParkName(){
+        $res=$this->field("ParkName,ParkCode")->select();
+        foreach($res as $key=>$value){
+            $data[$value["parkcode"]]=$value["parkname"];
+        }
+        return $data;
+    }
+    public function searchByParkName($name){
+         return   $this->field("ParkCode")->where("ParkName like '%$name%'")->select();
+    }
+
 }

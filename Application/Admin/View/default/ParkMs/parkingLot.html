@@ -1,0 +1,182 @@
+<extend name="Public/base"/>
+<block name="style">
+    <link rel="stylesheet" type="text/css" href="__CSS__/globe.css">
+    <link rel="stylesheet" type="text/css" href="__CSS__/parkLot.css">
+    <link rel="stylesheet" href="__MODULE_STATIC__/page/jquery.pagination.css"/>
+    <style>
+        .title{
+            font-weight: bold;
+        }
+    </style>
+</block>
+<block name="body">
+    <div class="main-title">
+        <h2>停车场列表&nbsp;&nbsp;&nbsp;</h2>
+    </div>
+    <!--率费信息-->
+    <div class="bodyMsg">
+        <div class="topLot">
+            <div class="parkLotName">
+                <span>停车场名称：</span>
+                <input type="text" id="js_searchInp">
+                <button id="js_search">搜索</button>
+            </div>
+
+        </div>
+        <!--table-->
+        <div class="tableAll">
+            <div class="div">
+                <p class="p-1">
+                    <span class="title_h2" id="js_qx">全选</span>
+                    <span class="title_h2" id="js_fx">反选</span>
+                    <span class="title_h2" id="js_sc">删除</span>
+                    <span class="title_h2" id="js_zj">增加</span>
+                </p>
+                <div style="clear:both;"></div>
+                <div class="div2">
+                    <table class="table table-hover table-striped">
+                        <thead>
+                        <tr>
+                            <th class="th-1">选择</th>
+                            <th>停车场编码</th>
+                            <th>停车场名称</th>
+                            <th>城市名称</th>
+                            <th>停车场地址</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tbody">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="div-footer">
+                    <div id="page" class="m-pagination"></div>
+                </div>
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+
+
+</block>
+<block name="script">
+
+    <script src="__MODULE_STATIC__/page/jquery.pagination-1.2.7.js"></script>
+    <script src="__JS__/page.js"></script>
+    <script src="__MODULE_STATIC__/layer/layer.js"></script>
+    <script type="text/javascript">
+        var parkinfo={$parkinfo};
+        $(function(){
+            query();
+            $("#js_search").on("click",function(){
+                $("#page").page('destroy');
+                query();
+            });
+        });
+        function query() {
+            var ii=layer.msg('加载中', {icon: 16});
+            var keyword=$("#js_searchInp").val();
+            $("#page").page({
+                debug: false,
+                showInfo: true,
+                showJump: true,
+                showPageSizes: false,
+                remote: {
+                    url: "/index.php/Admin/ParkMs/pagequery",
+                    params: {
+                        keyword: keyword,
+                    },
+                    success: function (data) {
+                        layer.close(ii);
+                        if (data.state != 0) {
+                            layer.alert(data.desc);
+                            return;
+                        }
+                        /*生成列表*/
+                        $("#tbody").empty();
+                        $.each(data.data, function (n, value) {
+                            $("#tbody").append("<tr data-id=" + value.id + " data-parkcode="+value.parkcode+"><td style='padding-left:25px;'><input class='checkBoxs' type='checkbox'/></td><td>" + value.parkcode + "</td><td>" + value.parkname + "</td><td>" + value.parkcompany + "</td><td>" + value.parkaddr + "</td><td class='js_xg' onclick='modify("+value.id+")'>修改</td></tr>");
+                        });
+                        layer.close(ii);
+                        $(".c_tooltips1").tooltip();
+                        /*点击tr选择*/
+                        $("tr").on("click", function () {
+                            if ($(this).find(".checkBoxs").is(":checked")) {
+                                $(this).find(".checkBoxs").removeAttr("checked");
+                            } else {
+                                $(this).find(".checkBoxs").prop("checked", true);
+                            }
+                        });
+                        /*反选*/
+                        $("#js_fx").on("click", function () {
+                            for (var i = 0; i < $(".checkBoxs").length; i++) {
+                                if ($(".checkBoxs").eq(i).is(":checked")) {
+                                    $(".checkBoxs").eq(i).removeAttr("checked");
+                                } else {
+                                    $(".checkBoxs").eq(i).prop("checked", true);
+                                }
+                            }
+                        });
+                        /*全选*/
+                        $("#js_qx").on("click", function () {
+                            if ($(".checkBoxs").is(":checked")) {
+                                $(".checkBoxs").prop("checked", true)
+                            }
+                            else {
+                                $(".checkBoxs").prop("checked", true)
+                            }
+                        });
+                        /*删除*/
+                        $("#js_sc").on("click", function () {
+                            var ii = layer.confirm("确认删除吗?", function () {
+                                layer.close(ii);
+                                deleteParks();
+                            });
+                        });
+
+
+                        /*增加*/
+                        $("#js_zj").on("click", function () {
+                            window.location.href = "/index.php/Admin/ParkMs/parkingAdd.html"
+                        })
+
+                    }
+                }
+            });
+        }
+        function deleteParks(){
+            var _id = [];
+            var _parkcode=[];
+            var checkBoxArr=$(".checkBoxs");
+            for(var i=0;i< checkBoxArr.length;i++){
+                var checkboxItem=checkBoxArr.eq(i);
+                if($(checkboxItem).is(":checked")){
+                    var id = $(checkboxItem).parents("tr").data("id");
+                    var parkcode=$(checkboxItem).parents("tr").data("parkcode");
+                    _id.push(id);
+                    _parkcode.push(parkcode);
+                    checkBoxArr.eq(i).parents("tr").remove();
+                }
+            }
+            var arr = _id.join(',');
+            var parkcodeStr=_parkcode.join(",");
+            $.ajax({
+                type:"POST",
+                url:  "/index.php/Admin/ParkMs/pagedetele",
+                data:{
+                    id:arr,
+                    parkcode:parkcodeStr
+
+                },
+                success:function(msg){
+                },
+                error:function(){
+                }
+            })
+        }
+        function modify(_id){
+            window.location.href="/index.php/Admin/ParkMs/parkingUpdate?id="+_id;
+        }
+    </script>
+
+</block>

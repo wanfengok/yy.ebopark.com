@@ -1,0 +1,162 @@
+.topLot{
+    padding: 15px;
+    font-size: 15px;
+    color: #000000;
+    display: flex;
+}
+.parkLotName span{
+    margin-right: 12px;
+}
+.parkLotName input{
+    border: 1px solid #cccccc;
+    width: 200px;
+    padding-left: 12px;
+    border-radius: 5px;
+}
+.parkLotName button{
+    padding: 0 12px;
+    border-radius: 3px;
+    background: #fff;
+    border: 1px solid #1aa5f1;
+    color: #1aa5f1;
+    margin-left: 12px;
+}
+.parkLotName button:active{
+    background: #1aa5f1;
+    color: #fff;
+}
+.parkChoose{
+    flex: 1;
+    margin-right: 100px;
+    text-align: right;
+}
+.parkChoose span{
+    display: inline-block;
+    border: 1px solid #1aa5f1;
+    padding:3px 6px;
+    color: #1aa5f1;
+    margin: 0 6px;
+}
+.parkChoose span:hover{
+    cursor:pointer
+}
+.tableAll .div-1{
+    width:100%;
+    height:1px;background-color:#e7e7e7;
+    margin-top:20px;
+}
+.tableAll .p-1{
+    float:left;
+    width:100%;
+}
+.tableAll .p-1 .title_h2{
+    float: left;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid #1aa5f1;
+    font-weight: normal;
+    color: #1aa5f1;
+    padding: 3px 6px;
+    margin-left: 20px;
+    border-radius: 3px;
+}
+.tableAll .p-1 .title_h2:hover{
+    cursor: pointer;
+    color: #1aa5f1;
+}
+.tableAll .div2{
+    margin-left: 20px;
+}
+.tableAll .table{
+    margin-right: 20px;
+    margin-bottom: 10px;
+}
+.tableAll .table thead .th-1{
+    padding-left:15px;
+}
+.tableAll thead{
+    background:#fff3e1;
+}
+.tableAll .div-footer{
+    float:right;
+    margin-bottom:100px;
+    padding-right:20px;
+    margin-top:10px;
+}
+.tableAll .js_xg:hover{
+    cursor: pointer;
+}
+
+
+
+/*弹窗*/
+.Mask{
+    position: fixed;
+    top:0;
+    left:0;
+    background: rgba(0,0,0,0.5);
+    width: 100%;
+    height:100%;
+    font-size: 13px;
+    display: none;
+}
+.Mask .xgMask{
+    width: 500px;
+    height: auto;
+    background: #fff;
+    border-radius: 12px;
+    margin: 100px auto;
+    padding-bottom: 20px;
+}
+.Mask .xgMask h3{
+    height: 30px;
+    line-height: 30px;
+    font-size: 15px;
+    padding: 0 24px;
+    border-bottom: 1px solid #1aa5f1;
+    color: #fff;
+    text-align: center;
+    background: #1aa5f1;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.Mask .xgMsg {
+    padding: 0 24px;
+}
+.Mask .xgMsg span{
+    display: inline-block;
+    width: 80px;
+    margin: 20px 0;
+    margin-left: 12px;
+}
+.Mask .xgMsg input{
+    width: 120px;
+    border: 1px solid #cccccc;
+    height: 25px;
+    line-height:25px;
+    padding-left: 6px;
+    border-radius: 5px;
+}
+.Mask .btnAll{
+    margin: 10px auto;
+    background: #fff;
+    border: 0;
+    text-align: center;
+}
+.Mask .xg_btn{
+    border: 0;
+    background: #1aa5f1;
+    color: #fff;
+    padding: 6px 0;
+    width: 60px;
+    margin-right: 12px;
+    border-radius: 3px;
+}
+.Mask .qx_btn{
+    border: 0;
+    background: #1aa5f1;
+    color: #fff;
+    padding: 6px;
+    width: 60px;
+    border-radius: 3px;
+}

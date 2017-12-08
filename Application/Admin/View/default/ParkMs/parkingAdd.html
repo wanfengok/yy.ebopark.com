@@ -1,0 +1,252 @@
+<extend name="Public/base"/>
+<block name="style">
+    <link rel="stylesheet" type="text/css" href="__CSS__/globe.css">
+    <link rel="stylesheet" type="text/css" href="__CSS__/parkAdd.css">
+    <script src="__MODULE_STATIC__/layer/layer.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/qiniu/moxie.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/qiniu/Plupload.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/qiniu/qiniu.min.js"></script>
+</block>
+<block name="body">
+    <div class="bodyMsg">
+        <!--停车场信息-->
+        <h3>停车场信息</h3>
+
+        <div class="tccMsg">
+            <div class="tcc-1">
+                <span>地域编码:</span>
+                <input type="text" class="input-1" id="dy_bm">
+            </div>
+            <div class="tcc-1">
+                <span>车场编码:</span>
+                <input type="text" class="input-1" id="js_parkbm">
+            </div>
+
+            <div class="tcc-1">
+                <span>车场地址:</span>
+                <input type="text" class="input-1" id="js_dz">
+            </div>
+            <div class="tcc-1">
+                <span>车场名称:</span>
+                <input type="text" class="input-1" id="js_name">
+            </div>
+
+
+            <div class="tcc-1">
+                <span>所在城市:</span>
+                <input type="text" class="input-1" id="js_city">
+            </div>
+            <div class="tcc-1">
+                <span>企业名称:</span>
+                <input type="text" class="input-1" id="js_companyname"/>
+            </div>
+            <div class="tcc-1">
+                <span style="width:120px;">时段月租截止日期:</span>
+                <input type="text" class="input-1" id="monthlyEndDate">
+            </div>
+            </br>
+            <div class="tcc-1" style="width:100%;">
+                <span>车场图片:</span>
+                <input type="text" class="input-2" id="parkpic"/>
+                <button class="btn-send" style="display:inline-block;" id="parkpicbtn">上传</button>
+            </div>
+            <div class="tcc-1" style="width:100%;">
+                <span>CAD文件:</span>
+                <input type="text" class="input-2" id="parkcad"/>
+                <button class="btn-send" style="display:inline-block;" id="parkcadbtn">上传</button>
+            </div>
+
+        </div>
+        <!--经营者信息-->
+        <h3>经营者信息</h3>
+
+        <div class="jjzMsg">
+            <div class="jjz-1">
+                <span>停车场状态:</span>
+                <select name="" id="parkStatus">
+                    <option value="1">启用</option>
+                    <option value="0">不启用</option>
+                </select>
+            </div>
+            <div class="jjz-1">
+                <span>经营者:</span>
+                <input type="text" id="manager"/>
+            </div>
+
+
+            <div class="jjz-2">
+                <span>联系人信息:</span>
+
+                <textarea class="divTxt"  id="contractInfo"></textarea>
+                <span style="color:#cccccc;">(姓名,职位,电话)</span>
+            </div>
+        </div>
+        <!--停车场配置-->
+        <h3>停车场配置</h3>
+
+        <div class="ttcPz">
+            <div class="title">
+
+                <div>
+                    <input type="checkbox" id="yzybrz">
+                    <label for="yzybrz">月租认证</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="lytc">
+                    <label for="lytc">0元弹窗</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="yzhy">
+                    <label for="yzhy">月租会员</label>
+                </div>
+            </div>
+        </div>
+        <div style="border:1px #cccccc dashed;margin-top:20px;"></div>
+        <button class="btn-send" id="send" style="width:90px; height:40px;margin-top:20px;">提交</button>
+    </div>
+</block>
+<block name="script">
+    <link rel="stylesheet" href="__MODULE_STATIC__/jedate/skin/jedate.css"/>
+    <script type="text/javascript" src="__MODULE_STATIC__/jedate/jedate.js"></script>
+    <script>
+        var ii=null;
+        var app = {
+            initListener: function () {
+                $("#send").on("click", function () {
+                    app.submit();
+                });
+                jeDate({
+                    dateCell: "#monthlyEndDate",
+                    isinitVal: false,
+                    isTime: true,
+                    format:"YYYY-MM-DD"
+                });
+            },
+            initQiniu: function () {
+                $.getJSON('./getQiNiuKey', function (data) {
+                    if (data.state == 0) {
+                        var key = data.result;
+                        app.initUploader(key, 'parkpic');
+                        app.initUploader(key, 'parkcad');
+
+                    }
+                });
+            },
+            initUploader: function initUploader(key, id) {
+                var cpts = Qiniu.uploader({
+                    runtimes: 'html5,flash,html4',      // 上传模式,依次退化
+                    browse_button: id + 'btn',         // 上传选择的点选按钮，**必需**
+                    uptoken: key, // uptoken 是上传凭证，由其他程序生成
+                    get_new_uptoken: false,             // 设置上传文件的时候是否每次都重新获取新的 uptoken
+                    unique_names: true,              // 默认 false，key 为文件名。若开启该选项，JS-SDK 会为每个文件自动生成key（文件名）
+                    domain: '7xpcl7.com2.z0.glb.qiniucdn.com',
+                    //domain:'7xodpu.com1.z0.glb.clouddn.com',//test
+                    max_file_size: '100mb',             // 最大文件体积限制
+                    flash_swf_url: '__PUBLIC__/js/qubuy/Moxie.swf',  //引入 flash,相对路径
+                    max_retries: 3,                     // 上传失败最大重试次数
+                    chunk_size: '4mb',                  // 分块上传时，每块的体积
+                    auto_start: true,                   // 选择文件后自动上传，若关闭需要自己绑定事件触发上传,
+                    init: {
+                        'FilesAdded': function (up, files) {
+                            plupload.each(files, function (file) {
+                                // 文件添加进队列后,处理相关的事情
+                            });
+                        },
+                        'BeforeUpload': function (up, file) {
+                            // 每个文件上传前,处理相关的事情
+                            ii=  layer.msg('上传中……');
+                        },
+                        'UploadProgress': function (up, file) {
+                            // 每个文件上传时,处理相关的事情
+                        },
+                        'FileUploaded': function (up, file, info) {
+
+                            var res = JSON.parse(info);
+                            var imgkey = res.key;
+                            var src = "http://7xpcl7.com2.z0.glb.qiniucdn.com/" + res.key;
+                            $("#" + id).val(src);
+                        },
+                        'Error': function (up, err, errTip) {
+                            //上传出错时,处理相关的事情
+                        },
+                        'UploadComplete': function () {
+                            //队列文件处理完毕后,处理相关的事情
+                            layer.close(ii);
+                        },
+                        'Key': function (up, file) {
+                            var key = "";
+                            return key
+                        }
+                    }
+                });
+            },
+            init: function () {
+                this.initListener();
+                this.initQiniu();
+            },
+            //提交表单
+            submit: function () {
+
+                var dy_bm = $.trim($("#dy_bm").val());
+                var js_parkbm = $.trim($("#js_parkbm").val());
+                var _dz = $.trim($("#js_dz").val());
+                var _name = $.trim($("#js_name").val());
+                var _city = $.trim($("#js_city").val());
+                var js_companyname=$.trim($("#js_companyname").val());
+                var monthlyEndDate=$.trim($("#monthlyEndDate").val());
+                var parkpic= $.trim($("#parkpic").val());
+                var parkcad=$.trim($("#parkcad").val());
+
+                var parkStatus=$.trim($("#parkStatus").val());
+                var manager=$.trim($("#manager").val());
+                var contractInfo=$.trim($("#contractInfo").val());
+
+                var yzybrz=$("#yzybrz").prop('checked');
+                var lytc=$("#lytc").prop('checked');
+                var yzhy=$("#yzhy").prop('checked');
+
+
+                if(dy_bm==""||js_parkbm==""||_dz==""||_name==""||_city==""){
+                    layer.alert("请填写完整信息");
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/index.php/Admin/ParkMs/addParkinglot",
+                    dataType: "json",
+                    data:{
+                        //地域编码
+                        bm:dy_bm,
+                        parkbm:js_parkbm,
+                        dz:_dz,
+                        name:_name,
+                        city:_city,
+                        companyname:js_companyname,
+                        monthlyEndDate:monthlyEndDate,
+                        parkpic:parkpic,
+                        parkcad:parkcad,
+                        parkStatus:parkStatus,
+                        manager:manager,
+                        contractInfo:contractInfo,
+                        yzybrz:yzybrz==true?1:0,
+                        lytc:lytc==true?1:0,
+                        yzhy:yzhy==true?1:0
+                    },
+                    success: function (msg) {
+                        if (msg.state == -1) {
+                            layer.msg(msg.desc);
+                        }
+                        window.location.href = "/index.php/Admin/ParkMs/parkingLot.html"
+                    },
+                    error: function () {
+                        console.log("失败")
+                    }
+                })
+
+
+            }
+        }
+        app.init();
+
+    </script>
+</block>

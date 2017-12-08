@@ -1,0 +1,122 @@
+<extend name="Public/base"/>
+<block name="style">
+    <link rel="stylesheet" type="text/css" href="__CSS__/globe.css">
+    <link rel="stylesheet" href="__CSS__/jquery.treeview.css">
+    <link rel="stylesheet" type="text/css" href="__CSS__/tree.css">
+</block>
+<block name="body">
+    <div class="bodyMsg clearfix">
+        <!--树状图列表-->
+        <div id="treeList">
+            <ul id="tree" class="filetree">
+                <!--一级菜单-->
+                <foreach name="data" item="val" key="key">
+                    <li><span class="folder">{$key}</span>
+                        <ul>
+                            <foreach name="val" item="item">
+                                <li><span class="folder parkitem" parkcode="{$item.parkcode}">{$item.parkname}</span></li>
+                            </foreach>
+
+                        </ul>
+                    </li>
+                </foreach>
+            </ul>
+        </div>
+        <!--基本信息-->
+        <div class="jbMsg">
+            <input type="hidden" name="uid" value="{$uid}" id="uid">
+            <h3 class="title" style="margin-bottom: 12px;">用户:{$nickname}</h3>
+            <table class="table table-hover table-striped" >
+                <thead>
+                <tr style="background:#f3fbff;height:28px;">
+                    <th>停车场编码</th>
+                    <th>停车场名称</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                <foreach name="parklist" item="parksitem">
+                    <tr>
+                    <td>{$parksitem.parkcode}</td>
+                    <td>{$parksitem.parkname}</td>
+                    <td><a onclick='delPark({$parksitem.parkcode},this)'>删除</a></td>
+                    </tr>
+                </foreach>
+                </tbody>
+        </div>
+    </div>
+
+</block>
+<block name="script">
+    <script src="__JS__/jquery.cookie.js"></script>
+    <script src="__JS__/jquery.treeview.js"></script>
+    <script src="__MODULE_STATIC__/layer/layer.js"></script>
+    <script type="text/javascript">
+        $("#tree").treeview({
+            persist: "location",
+            collapsed: true,
+            unique: true
+        });
+        $(function(){
+            $(".parkitem").on("click",function(){
+                var parkcode=$(this).attr("parkcode");
+                var parkname=$(this).text();
+                addPark(parkcode,parkname);
+
+            });
+        });
+        function addPark(parkcode,parkname){
+            var uid=$("#uid").val();
+            var data={
+                    "parkcode":parkcode,
+                    "parkname":parkname,
+                    "uid":uid
+            };
+            var trList = $("#tbody").find("tr");
+            var tdList = [];
+            for(var i=0;i<trList.length;i++){
+                var _td = trList.eq(i).find("td").eq(0).text();
+                tdList.push(_td)
+            }
+            console.log(tdList);
+            var ii=layer.msg("操作中……");
+            if(jQuery.inArray(parkcode,tdList) == -1 ){
+                $.getJSON("/index.php/Admin/ParkMs/addParklot?"+ $.param(data),function(data){
+                    layer.close(ii);
+                    if(data.state!=0){
+                        layer.alert(data.desc);
+                        return;
+                    }
+                    $("#tbody").append("<tr class='tr'>"+
+                        "<td>"+parkcode+"</td>"+
+                        " <td>"+parkname+"</td>"+
+                        "<td><a onclick='delPark("+parkcode+",this)'>删除</a></td>"+
+                        "</tr>");
+
+                });
+            }else{
+                var _li=layer.msg("不能重复添加");
+//                    layer.close(_li);
+            }
+
+        }
+        function delPark(parkcode,_self){
+            var uid=$("#uid").val();
+            var data={
+                "parkcode":parkcode,
+                "uid":uid
+            };
+            var ii=layer.msg("操作中……");
+            $.getJSON("/index.php/Admin/ParkMs/delParklot?"+ $.param(data),function(data){
+                layer.close(ii);
+                if(data.state!=0){
+                    layer.alert(data.desc);
+                    return;
+                }
+        $(_self).parent().parent().remove();
+
+            });
+        }
+
+    </script>
+</block>

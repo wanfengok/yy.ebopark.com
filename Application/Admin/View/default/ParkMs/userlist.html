@@ -1,0 +1,72 @@
+<extend name="Public/base"/>
+<block name="style">
+    <link rel="stylesheet" type="text/css" href="__CSS__/globe.css">
+    <link rel="stylesheet" type="text/css" href="__CSS__/parkLot.css">
+</block>
+<block name="body">
+    <div class="bodyMsg">
+        <!--率费信息-->
+        <h3 class="h3Title">停车场管理——管理员列表</h3>
+        <div class="topLot">
+            <div class="parkLotName">
+                <span>用户名：</span>
+                <input type="text">
+                <span>姓名：</span>
+                <input type="text">
+                <button>查询</button>
+            </div>
+            <div class="parkChoose">
+                <span id="js_qx">全选</span>
+                <span id="jd_fx">反选</span>
+                <span id="js_tj">添加</span>
+                <span id="js_sc">删除</span>
+                <span id="js_sx">刷新</span>
+            </div>
+        </div>
+        <!--table-->
+        <div class="tableAll">
+
+        </div>
+        <!--修改弹窗-->
+        <!--支付方式弹框-->
+        <div class="Mask" style="display: none">
+            <div class="zfMask">
+                <h5>添加用户<i class="icon icon-error"></i></h5>
+                <div class="zfMsg">
+                    <div>
+                        <span>用户名</span>
+                        <input type="text">
+                    </div>
+                    <div>
+                        <span>姓名</span>
+                        <input type="text">
+                    </div>
+                    <div>
+                        <span>手机号</span>
+                        <input type="text">
+                    </div>
+                    <div>
+                        <span>邮箱</span>
+                        <input type="text">
+                    </div>
+                    <div>
+                        <span>密码</span>
+                        <input type="text">
+                    </div>
+                </div>
+                <button>保存</button>
+            </div>
+        </div>
+    </div>
+
+</block>
+<block name="script">
+    <script>
+        $("#js_zf").on("click",function(){
+            $(".Mask").show();
+        })
+        $(".icon-error").on("click",function(){
+            $(".Mask").hide();
+        })
+    </script>
+</block>

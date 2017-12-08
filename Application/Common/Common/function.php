@@ -98,6 +98,7 @@ function getParam($name)
 {
 
     $value = IS_GET ? $_GET[$name] : $_POST[$name];
+
     if (empty($value)) {
         return $value;
     }
